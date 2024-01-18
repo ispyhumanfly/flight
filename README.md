@@ -1,2 +1,2 @@
 # flight
-A web server for designed running full stack, component based applications at scale.
+A web server designed for running full stack, component based applications at enterprise scale.
