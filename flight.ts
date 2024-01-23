@@ -20,7 +20,7 @@ import Redis from 'ioredis'
 const argv = require('yargs/yargs')(process.argv.slice(2)).argv
 
 if (!argv.root_path) {
-    argv.root_path = './src'
+    argv.root_path = '.'
 }
 
 // change working directory of this script to ./src/
