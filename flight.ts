@@ -19,10 +19,13 @@ import Redis from 'ioredis'
 
 const argv = require('yargs/yargs')(process.argv.slice(2)).argv
 
-// change working directory of this script to ./src/
-process.chdir(path.resolve(__dirname, './src'))
+if (!argv.root_path) {
+    argv.root_path = './src'
+}
 
-process
+// change working directory of this script to ./src/
+process.chdir(path.resolve(__dirname, argv.root_path))
+
 if (!argv.mode) {
     argv.mode = 'development'
 }
@@ -79,8 +82,8 @@ if (cluster.isPrimary) {
 
     app.use(cors()).use(bodyParser())
 
-    const serverFiles = fg.sync('app/components/**/*.server.ts')
-    serverFiles.forEach((file) => {
+    const backEndFiles = fg.sync('app/components/**/*.backend.ts')
+    backEndFiles.forEach((file) => {
         const serverRoutes = require(path.resolve(file))
         if (serverRoutes && serverRoutes.default) {
             router.use(serverRoutes.default)
