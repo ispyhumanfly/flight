@@ -4,7 +4,7 @@
   "description": "A web server designed for running full stack, component based applications at enterprise scale.",
   "main": "flight.ts",
   "bin": {
-    "flight": "ts-node flight.ts"
+    "flight": "./flight.ts"
   },
   "repository": {
     "type": "git",
