@@ -1,4 +1,4 @@
-[*.{js,jsx,ts,tsx,cs}]
+[*.{js,jsx,ts,tsx,cs, json, md, yml, yaml, html, css, scss, less, graphql, mdx, vue, svelte, php, py, rb, rs, toml, go, java, sh, fish, bash, zsh, ksh, sql, tex, r, rmd, dart, xml, cfml, cfc, cfm, tcl, liquid, lisp, el, vue, svelte, swift, scala, groovy, kt, kts, clj, cljs, edn, hs, lhs, lua, moon, ml, mli, mll, mly, pascal, pas, pl, pm, t, pod, php, php3, php4, php5, php6, php7, php8, phtml, ps1, psm1, py, py3, pyi, pyx, r, rkt, rpy, rpy2, rb, rs, rli}]
 indent_style = space
 indent_size = 4
 trim_trailing_whitespace = true

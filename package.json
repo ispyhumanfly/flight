@@ -2,9 +2,9 @@
   "name": "flight",
   "version": "1.0.0",
   "description": "A web server designed for running full stack, component based applications at enterprise scale.",
-  "main": "dist/flight.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "main": "flight.ts",
+  "bin": {
+    "flight": "ts-node flight.ts"
   },
   "repository": {
     "type": "git",
@@ -17,19 +17,21 @@
   },
   "homepage": "https://github.com/bartonmalow/flight#readme",
   "dependencies": {
+    "@koa/cors": "^5.0.0",
+    "@koa/router": "^12.0.1",
     "core-js": "^3.35.0",
-        "dotenv": "^16.3.1",
-        "fast-glob": "^3.3.2",
-        "ioredis": "^5.3.2",
-        "koa": "^2.15.0",
-        "koa-bodyparser": "^4.4.1",
-        "koa-compress": "^5.1.1",
-        "koa-helmet": "^7.0.2",
-        "koa-logger": "^3.2.1",
-        "koa-onerror": "^4.2.0",
-        "koa-ratelimit": "^5.1.0",
-        "koa-redis-cache": "^3.0.3",
-        "koa-static": "^5.0.0"
+    "dotenv": "^16.3.1",
+    "fast-glob": "^3.3.2",
+    "ioredis": "^5.3.2",
+    "koa": "^2.15.0",
+    "koa-bodyparser": "^4.4.1",
+    "koa-compress": "^5.1.1",
+    "koa-helmet": "^7.0.2",
+    "koa-logger": "^3.2.1",
+    "koa-ratelimit": "^5.1.0",
+    "koa-redis-cache": "^3.0.3",
+    "koa-static": "^5.0.0",
+    "yargs": "^17.7.2"
   },
   "devDependencies": {
     "@types/koa": "^2.14.0",
@@ -41,6 +43,8 @@
     "@types/koa-ratelimit": "^5.0.4",
     "@types/koa-redis-cache": "^3.0.4",
     "@types/koa-static": "^4.0.4",
-    "@types/node": "^20.11.0"
+    "@types/node": "^20.11.0",
+    "ts-node": "^10.4.0",
+    "typescript": "^4.5.4"
   }
 }
