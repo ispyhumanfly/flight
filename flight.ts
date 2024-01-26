@@ -3,7 +3,7 @@
 import Koa from 'koa'
 import Router from '@koa/router'
 import fg from 'fast-glob'
-import path from 'path'
+import path, { resolve } from 'path'
 import cors from '@koa/cors'
 import bodyParser from 'koa-bodyparser'
 import logger from 'koa-logger'
@@ -19,12 +19,14 @@ import Redis from 'ioredis'
 
 const argv = require('yargs/yargs')(process.argv.slice(2)).argv
 
-if (!argv.root_path) {
-    argv.root_path = '.'
+if (!argv.app_home) {
+    argv.app_home = '.'
 }
 
-// change working directory of this script to ./src/
-process.chdir(path.resolve(__dirname, argv.root_path))
+const appHomePath = path.resolve(argv.app_home)
+process.chdir(appHomePath)
+
+console.log(appHomePath)
 
 if (!argv.mode) {
     argv.mode = 'development'
@@ -97,7 +99,7 @@ if (cluster.isPrimary) {
     })
 
     if (argv.mode === 'development') {
-        exec('npx vite', (error, stdout, stderr) => {
+        exec(__dirname + '/node_modules/.bin/vite', (error, stdout, stderr) => {
             if (error) {
                 console.error(`exec error: ${error}`)
                 return
