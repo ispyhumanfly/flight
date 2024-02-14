@@ -14,6 +14,7 @@ import os from 'os'
 import { exec } from 'child_process'
 import serve from 'koa-static'
 import cache from 'koa-redis-cache' // Import the middleware
+import session from "koa-session"
 
 import Redis from 'ioredis'
 
@@ -46,6 +47,19 @@ if (cluster.isPrimary) {
     })
 } else {
     const app = new Koa()
+
+    app.keys = ['MY secret keys']
+
+    const SESSION_CONFIG = {
+        // Session configuration options
+        // For example, to change the cookie name:
+        key: 'koa:sess', // default
+        maxAge: 86400000, // cookie's expire time, 24 hours in milliseconds
+        // additional configurations...
+    };
+
+    app.use(session(SESSION_CONFIG, app))
+
     const router = new Router()
 
     if (argv.mode === 'production') {
