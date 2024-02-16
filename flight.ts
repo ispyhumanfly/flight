@@ -56,10 +56,28 @@ if (cluster.isPrimary) {
         // For example, to change the cookie name:
         key: 'koa:sess', // default
         maxAge: 86400000, // cookie's expire time, 24 hours in milliseconds
+        autoCommit: true, /** (boolean) automatically commit headers (default true) */
+        overwrite: true, /** (boolean) can overwrite or not (default true) */
+        httpOnly: true, /** (boolean) httpOnly or not (default true) */
+        signed: true, /** (boolean) signed or not (default true) */
+        rolling: false, /** (boolean) Force a session identifier cookie to be set on every response. The expiration is reset to the original maxAge, resetting the expiration countdown. (default is false) */
+        renew: false, /** (boolean) renew session when session is nearly expired, so we can always keep user logged in. (default is false)*/
+        secure: false, /** (boolean) secure cookie*/
+        sameSite: null, /** (string) session cookie sameSite options (default null, don't set it) */
         // additional configurations...
     };
 
     app.use(session(SESSION_CONFIG, app))
+
+    // app.use(ctx => {
+    //     // ignore favicon
+    //     if (ctx.path === '/favicon.ico') return;
+
+    //     let n = ctx.session.views || 0;
+    //     ctx.session.views = ++n;
+    //     ctx.body = n + ' views';
+    //     ctx.body = ctx.session.code
+    //   });
 
     const router = new Router()
 
@@ -101,6 +119,10 @@ if (cluster.isPrimary) {
     const backEndFiles = fg.sync('app/components/**/*.backend.ts')
     backEndFiles.forEach((file) => {
         const serverRoutes = require(path.resolve(file))
+
+        console.log("Found backend file: " + path.resolve(file))
+
+
         if (serverRoutes && serverRoutes.default) {
             router.use(serverRoutes.default)
         }
