@@ -47,6 +47,7 @@ if (cluster.isPrimary) {
     })
 } else {
     const app = new Koa()
+    app.use(logger())
 
     app.keys = ['MY secret keys']
 
@@ -91,7 +92,6 @@ if (cluster.isPrimary) {
             })
         )
         app.use(cache({ expire: 30 /* Cache time in seconds */ }))
-        app.use(logger())
         app.use(serve('../dist'))
         console.log("App served out of dist/ and available on port 3000")
     }
@@ -109,7 +109,7 @@ if (cluster.isPrimary) {
     app.use(router.routes()).use(router.allowedMethods())
 
     app.listen(3000, () => {
-        console.log(`Server worker ${process.pid} started, All services are running on port 3000`)
+        console.log(`Server worker ${process.pid} started, All backend services are running on port 3000`)
     })
 
     if (argv.mode === 'development') {
