@@ -81,14 +81,14 @@ if (cluster.isPrimary) {
 
     // middleware to check session   Pietka 16FEB24
     app.use(async (ctx, next) => {
-        if (ctx.path !== 'http://localhost:3000' && !ctx.session.user) 
+        if (ctx.path !== 'http://localhost:3000' && !ctx.session.user)
         {
             ctx.status = 401; // Unauthorized
             ctx.body = 'Invalid session';
             ctx.redirect('http://localhost:3001/auth')
-            
-        } 
-        else 
+
+        }
+        else
         {
             await next();
         }
@@ -98,13 +98,13 @@ if (cluster.isPrimary) {
 
     // check session endpoint   Pietka 16FEB24
     router.get('/check-session', (ctx) => {
-        if (ctx.session.user) 
+        if (ctx.session.user)
         {
             ctx.body = 'Session is valid';
             //ctx.redirect('http://localhost:3001')
             ctx.redirect('http://www.google.com')
-        } 
-        else 
+        }
+        else
         {
             ctx.status = 401; // Unauthorized
             ctx.body = 'Invalid session';
@@ -166,7 +166,7 @@ if (cluster.isPrimary) {
     })
 
     if (argv.mode === 'development') {
-        exec(__dirname + '/node_modules/.bin/vite', (error, stdout, stderr) => {
+        exec("npx vite", (error, stdout, stderr) => {
             if (error) {
                 console.error(`exec error: ${error}`)
                 return
