@@ -106,7 +106,7 @@ if (cluster.isPrimary) {
         else
         {
             ctx.status = 401; // Unauthorized
-            ctx.body = 'Invalid session';
+            ctx.response.body = { message: 'Invalid session' }
             ctx.redirect('http://localhost:3001/auth')
         }
     });
