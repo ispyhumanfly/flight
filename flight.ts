@@ -81,10 +81,10 @@ if (cluster.isPrimary) {
 
     // middleware to check session   Pietka 16FEB24
     app.use(async (ctx, next) => {
-        if (ctx.path !== 'http://localhost:3000' && !ctx.session.user)
+        if (ctx.path !== 'http://localhost:3000' && !ctx.session.code)
         {
             ctx.status = 401; // Unauthorized
-            ctx.body = 'Invalid session';
+            ctx.body = { message: 'Invalid session' };
             ctx.redirect('http://localhost:3001/auth')
 
         }
@@ -98,11 +98,10 @@ if (cluster.isPrimary) {
 
     // check session endpoint   Pietka 16FEB24
     router.get('/check-session', (ctx) => {
-        if (ctx.session.user)
+        if (ctx.session.code)
         {
-            ctx.body = 'Session is valid';
-            //ctx.redirect('http://localhost:3001')
-            ctx.redirect('http://www.google.com')
+            ctx.body = { messge: 'Session is valid' };
+            ctx.redirect('http://localhost:3001/')
         }
         else
         {
