@@ -79,7 +79,38 @@ if (cluster.isPrimary) {
     //     ctx.body = ctx.session.code
     //   });
 
+    // middleware to check session   Pietka 16FEB24
+    app.use(async (ctx, next) => {
+        if (ctx.path !== 'http://localhost:3000' && !ctx.session.user) 
+        {
+            ctx.status = 401; // Unauthorized
+            ctx.body = 'Invalid session';
+            ctx.redirect('http://localhost:3001/auth')
+            
+        } 
+        else 
+        {
+            await next();
+        }
+    });
+
     const router = new Router()
+
+    // check session endpoint   Pietka 16FEB24
+    router.get('/check-session', (ctx) => {
+        if (ctx.session.user) 
+        {
+            ctx.body = 'Session is valid';
+            //ctx.redirect('http://localhost:3001')
+            ctx.redirect('http://www.google.com')
+        } 
+        else 
+        {
+            ctx.status = 401; // Unauthorized
+            ctx.body = 'Invalid session';
+            ctx.redirect('http://localhost:3001/auth')
+        }
+    });
 
     if (argv.mode === 'production') {
 
@@ -114,7 +145,7 @@ if (cluster.isPrimary) {
         console.log("App served out of dist/ and available on port 3000")
     }
 
-    app.use(cors()).use(bodyParser())
+    app.use(cors({ credentials: true, origin: 'http://localhost:3000' })).use(bodyParser())
 
     const backEndFiles = fg.sync('app/components/**/*.backend.ts')
     backEndFiles.forEach((file) => {
