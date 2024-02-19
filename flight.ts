@@ -49,7 +49,7 @@ if (cluster.isPrimary) {
     const app = new Koa()
     app.use(logger())
 
-    app.keys = ['MY secret keys']
+    app.keys = ['//input example secret key//']
 
     const SESSION_CONFIG = {
         // Session configuration options
@@ -64,6 +64,7 @@ if (cluster.isPrimary) {
         renew: false, /** (boolean) renew session when session is nearly expired, so we can always keep user logged in. (default is false)*/
         secure: false, /** (boolean) secure cookie*/
         sameSite: null, /** (string) session cookie sameSite options (default null, don't set it) */
+        path: '/', /** (string) session cookie path */
         // additional configurations...
     };
 
