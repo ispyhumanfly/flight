@@ -79,37 +79,7 @@ if (cluster.isPrimary) {
     //     ctx.body = ctx.session.code
     //   });
 
-    // middleware to check session   Pietka 16FEB24
-    app.use(async (ctx, next) => {
-        if (ctx.path !== 'http://localhost:3000' && !ctx.session.code)
-        {
-            ctx.status = 401; // Unauthorized
-            ctx.body = { message: 'Invalid session' };
-            ctx.redirect('http://localhost:3001/auth')
-
-        }
-        else
-        {
-            await next();
-        }
-    });
-
     const router = new Router()
-
-    // check session endpoint   Pietka 16FEB24
-    router.get('/check-session', (ctx) => {
-        if (ctx.session.code)
-        {
-            ctx.body = { messge: 'Session is valid' };
-            ctx.redirect('http://localhost:3001/')
-        }
-        else
-        {
-            ctx.status = 401; // Unauthorized
-            ctx.response.body = { message: 'Invalid session' }
-            ctx.redirect('http://localhost:3001/auth')
-        }
-    });
 
     if (argv.mode === 'production') {
 
