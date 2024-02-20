@@ -15,7 +15,7 @@ import { exec } from 'child_process'
 import serve from 'koa-static'
 import cache from 'koa-redis-cache' // Import the middleware
 import session from "koa-session"
-
+import RedisStore from "koa-redis"
 import Redis from 'ioredis'
 
 const argv = require('yargs/yargs')(process.argv.slice(2)).argv
@@ -65,6 +65,9 @@ if (cluster.isPrimary) {
         secure: false, /** (boolean) secure cookie*/
         sameSite: null, /** (string) session cookie sameSite options (default null, don't set it) */
         path: '/', /** (string) session cookie path */
+        store: RedisStore({
+            client: new Redis()
+        })
         // additional configurations...
     };
 
