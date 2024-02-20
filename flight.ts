@@ -35,6 +35,8 @@ if (!argv.mode) {
 
 console.log = console.log.bind(null, 'Flight:')
 
+const redis = new Redis()
+
 if (cluster.isPrimary) {
     const numCPUs = os.cpus().length
 
@@ -66,7 +68,7 @@ if (cluster.isPrimary) {
         sameSite: true, /** (string) session cookie sameSite options (default null, don't set it) */
         path: '/', /** (string) session cookie path */
         store: RedisStore({
-            client: new Redis()
+            client: redis
         })
         // additional configurations...
     };
@@ -100,7 +102,7 @@ if (cluster.isPrimary) {
         app.use(
             ratelimit({
                 driver: 'redis',
-                db: new Redis(),
+                db: redis,
                 duration: 60000,
                 errorMessage: 'Sometimes You Just Have to Slow Down.',
                 id: (ctx) => ctx.ip,
