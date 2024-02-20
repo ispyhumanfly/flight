@@ -54,8 +54,8 @@ if (cluster.isPrimary) {
     const SESSION_CONFIG = {
         // Session configuration options
         // For example, to change the cookie name:
-        key: 'koa:sess', // default
-        // maxAge: 86400000, // cookie's expire time, 24 hours in milliseconds
+        key: 'flightApp', // default
+        maxAge: 86400000, // cookie's expire time, 24 hours in milliseconds
         // autoCommit: true, /** (boolean) automatically commit headers (default true) */
         // overwrite: true, /** (boolean) can overwrite or not (default true) */
         // httpOnly: true, /** (boolean) httpOnly or not (default true) */
@@ -63,7 +63,7 @@ if (cluster.isPrimary) {
         // rolling: false, /** (boolean) Force a session identifier cookie to be set on every response. The expiration is reset to the original maxAge, resetting the expiration countdown. (default is false) */
         // renew: false, /** (boolean) renew session when session is nearly expired, so we can always keep user logged in. (default is false)*/
         // secure: false, /** (boolean) secure cookie*/
-        // sameSite: null, /** (string) session cookie sameSite options (default null, don't set it) */
+        sameSite: true, /** (string) session cookie sameSite options (default null, don't set it) */
         path: '/', /** (string) session cookie path */
         store: RedisStore({
             client: new Redis()
@@ -118,7 +118,8 @@ if (cluster.isPrimary) {
         console.log("App served out of dist/ and available on port 3000")
     }
 
-    app.use(cors({ credentials: true, origin: 'http://localhost:3000' })).use(bodyParser())
+    // app.use(cors({ credentials: true, origin: 'http://localhost:3000' })).use(bodyParser())
+    app.use(cors()).use(bodyParser())
 
     const backEndFiles = fg.sync('app/components/**/*.backend.ts')
     backEndFiles.forEach((file) => {
