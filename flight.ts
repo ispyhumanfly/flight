@@ -17,8 +17,8 @@ import cache from 'koa-redis-cache' // Import the middleware
 import session from 'koa-session'
 import RedisStore from 'koa-redis'
 import Redis from 'ioredis'
-import send from 'koa-send'
-import historyFallback from 'koa-connect-history-api-fallback'
+// import send from 'koa-send'
+// import historyFallback from 'koa-connect-history-api-fallback'
 
 const argv = require('yargs/yargs')(process.argv.slice(2)).argv
 
@@ -103,7 +103,7 @@ if (cluster.isPrimary) {
     // app.use(cors({ credentials: true, origin: 'http://localhost:3000' })).use(bodyParser())
     app.use(cors()).use(bodyParser())
 
-    const backEndFiles = fg.sync('app/components/**/*.backend.ts')
+    const backEndFiles = fg.sync('**/*.backend.ts')
     backEndFiles.forEach((file) => {
         const serverRoutes = require(path.resolve(file))
 
