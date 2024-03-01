@@ -89,17 +89,17 @@ if (cluster.isPrimary) {
 
     const router = new Router()
 
-    // redis get and set 
-    router.get('/get/:key', async (ctx) => {
-            const result = await redis.get(ctx.params.key);
-            ctx.body = result;
-        });
-        
-        router.post('/set/:key', async (ctx) => {
-            await redis.set(ctx.params.key, ctx.request.body as string);
-            ctx.body = 'OK';
-        });
-        
+    // // redis get and set
+    // router.get('/get/:key', async (ctx) => {
+    //         const result = await redis.get(ctx.params.key);
+    //         ctx.body = result;
+    //     });
+
+    //     router.post('/set/:key', async (ctx) => {
+    //         await redis.set(ctx.params.key, ctx.request.body as string);
+    //         ctx.body = 'OK';
+    //     });
+
     // app.use(cors({ credentials: true, origin: 'http://localhost:3000' })).use(bodyParser())
     app.use(cors()).use(bodyParser())
 
@@ -164,13 +164,13 @@ if (cluster.isPrimary) {
         //     }
         // })
 
-        app.use(async (ctx, next) => {
-            if (ctx.method === 'GET' && !ctx.url.startsWith('/backend')) {
-                await send(ctx, 'index.html', { root: '../dist' })
-            } else {
-                await next()
-            }
-        })
+        // app.use(async (ctx, next) => {
+        //     if (ctx.method === 'GET' && !ctx.url.startsWith('/backend')) {
+        //         await send(ctx, 'index.html', { root: '../dist' })
+        //     } else {
+        //         await next()
+        //     }
+        // })
     }
 
     // app.use(historyFallback({
