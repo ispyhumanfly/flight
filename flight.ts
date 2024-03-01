@@ -88,6 +88,18 @@ if (cluster.isPrimary) {
     //   });
 
     const router = new Router()
+
+    // redis get and set 
+    router.get('/get/:key', async (ctx) => {
+            const result = await redis.get(ctx.params.key);
+            ctx.body = result;
+        });
+        
+        router.post('/set/:key', async (ctx) => {
+            await redis.set(ctx.params.key, ctx.request.body as string);
+            ctx.body = 'OK';
+        });
+        
     // app.use(cors({ credentials: true, origin: 'http://localhost:3000' })).use(bodyParser())
     app.use(cors()).use(bodyParser())
 
