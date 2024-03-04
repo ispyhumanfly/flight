@@ -7,7 +7,8 @@
         "flight": "./flight.ts"
     },
     "scripts": {
-        "lint": "eslint . --fix --ignore-path .gitignore && prettier -w ."
+        "lint": "eslint . --fix --ignore-path .gitignore && prettier -w .",
+        "postinstall": "npm install"
     },
     "repository": {
         "type": "git",
