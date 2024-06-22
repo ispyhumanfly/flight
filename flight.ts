@@ -37,7 +37,10 @@ if (!argv.mode) {
 
 console.log = console.log.bind(null, 'Flight:')
 
-const redis = new Redis()
+const redis = new Redis({
+    host: process.env.FLIGHT_REDIS_HOST || 'localhost',
+    port:  Number(process.env.FLIGHT_REDIS_PORT) || 6379
+})
 
 if (cluster.isPrimary) {
     const numCPUs = os.cpus().length
