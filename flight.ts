@@ -39,7 +39,7 @@ console.log = console.log.bind(null, 'Flight:')
 
 const redis = new Redis({
     host: process.env.FLIGHT_REDIS_HOST || 'localhost',
-    port:  Number(process.env.FLIGHT_REDIS_PORT) || 6379
+    port: Number(process.env.FLIGHT_REDIS_PORT) || 6379
 })
 
 if (cluster.isPrimary) {
@@ -75,35 +75,12 @@ if (cluster.isPrimary) {
         store: RedisStore({
             client: redis
         })
-        // additional configurations...
     }
 
     app.use(session(SESSION_CONFIG, app))
 
-    // app.use(ctx => {
-    //     // ignore favicon
-    //     if (ctx.path === '/favicon.ico') return;
-
-    //     let n = ctx.session.views || 0;
-    //     ctx.session.views = ++n;
-    //     ctx.body = n + ' views';
-    //     ctx.body = ctx.session.code
-    //   });
-
     const router = new Router()
 
-    // // redis get and set
-    // router.get('/get/:key', async (ctx) => {
-    //         const result = await redis.get(ctx.params.key);
-    //         ctx.body = result;
-    //     });
-
-    //     router.post('/set/:key', async (ctx) => {
-    //         await redis.set(ctx.params.key, ctx.request.body as string);
-    //         ctx.body = 'OK';
-    //     });
-
-    // app.use(cors({ credentials: true, origin: 'http://localhost:3000' })).use(bodyParser())
     app.use(cors()).use(bodyParser())
 
     const backEndFiles = fg.sync('**/*.backend.ts')
@@ -149,43 +126,7 @@ if (cluster.isPrimary) {
         app.use(cache({ expire: 30 /* Cache time in seconds */ }))
         app.use(serve('../dist'))
         console.log('App served out of dist/ and available on port 3000')
-
-        // . app.use(historyFallback())
-
-        // app.use(async (ctx, next) => {
-        //     if (ctx.method === 'GET' && !ctx.url.startsWith('/backend')) {
-        //         await send(ctx, 'index.html', { root: '../dist' });
-        //     } else {
-        //         await next()
-        //     }
-        // });
-
-        // // All other routes should be handled by your index.html
-        // app.use(async (ctx) => {
-        //     if (ctx.method === 'GET' && !ctx.url.startsWith('/auth')) {
-        //         await send(ctx, 'index.html', { root: "../dist" });
-        //     }
-        // })
-
-        // app.use(async (ctx, next) => {
-        //     if (ctx.method === 'GET' && !ctx.url.startsWith('/backend')) {
-        //         await send(ctx, 'index.html', { root: '../dist' })
-        //     } else {
-        //         await next()
-        //     }
-        // })
     }
-
-    // app.use(historyFallback({
-    //     rewrites: [
-    //       {
-    //         from: /^\/backend\/.*$/,
-    //         to: function(context) {
-    //           return context.parsedUrl.path
-    //         }
-    //       }
-    //     ]
-    //   }));
 
     app.listen(3000, () => {
         console.log(`Server worker ${process.pid} started, All backend services are running on port 3000`)
