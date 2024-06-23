@@ -1,0 +1,8 @@
+{
+    // exclude .vscode, .github and node_modules from the explorer
+    "files.exclude": {
+        "**/.vscode": true,
+        "**/.github": true,
+        "**/node_modules": true
+    }
+}
