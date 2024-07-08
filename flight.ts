@@ -124,7 +124,7 @@ if (cluster.isPrimary) {
             })
         )
         app.use(cache({ expire: 30 /* Cache time in seconds */ }))
-        app.use(serve('../dist'))
+        app.use(serve(process.env.FLIGHT_DIST_PATH || '../dist'))
         console.log('App served out of dist/ and available on port 3000')
     }
 
