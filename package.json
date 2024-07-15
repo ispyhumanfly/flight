@@ -27,7 +27,7 @@
         "core-js": "^3.37.1",
         "dotenv": "^16.4.5",
         "esbuild": "^0.23.0",
-        "fast-glob": "^3.3.2",
+        "fast-glob": "3.3.2",
         "ioredis": "^5.4.1",
         "koa": "^2.15.3",
         "koa-bodyparser": "^4.4.1",
