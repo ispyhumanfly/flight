@@ -24,6 +24,7 @@
         "@koa/router": "^12.0.1",
         "@vitejs/plugin-vue": "^5.0.5",
         "@vue/language-plugin-pug": "^2.0.28",
+
         "core-js": "^3.37.1",
         "dotenv": "^16.4.5",
         "esbuild": "^0.23.0",
@@ -42,7 +43,7 @@
         "koa-session": "^6.4.0",
         "koa-static": "^5.0.0",
         "unplugin-fonts": "^1.1.1",
-        "vite": "^5.3.3",
+        "vite": "^5.3.4",
         "vite-plugin-vuetify": "^2.0.3",
         "yargs": "^17.7.2"
     },
