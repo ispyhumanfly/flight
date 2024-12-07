@@ -1,13 +1,17 @@
 {
-    "name": "flight",
+    "name": "@spytech/flight",
     "version": "1.0.0",
     "description": "A web server designed for running full stack, component based applications at enterprise scale.",
     "main": "flight.ts",
+    "publishConfig": {
+        "access": "public"
+    },
     "bin": {
-        "flight": "./flight.ts"
+        "flight": "./dist/flight.js"
     },
     "scripts": {
-        "lint": "eslint . --fix --ignore-path .gitignore && prettier -w ."
+        "lint": "eslint . --fix --ignore-path .gitignore && prettier -w .",
+        "build": "rm -rf dist; node_modules/.bin/tsc --project ."
     },
     "repository": {
         "type": "git",
