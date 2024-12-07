@@ -1,4 +1,3 @@
-
 filter-run-always: &filter-run-always
   filters:
     tags:
@@ -9,7 +8,7 @@ filter-run-on-master-and-version-tag-only: &filter-run-on-master-and-version-tag
     tags:
       only: /^v.*/
     branches:
-      ignore: /.*/
+      only: main
 
 aliases:
   - &step-checkout
@@ -46,7 +45,7 @@ jobs:
   deploy:
     working_directory: ~/repo
     docker:
-      - image: circleci/node:20
+      - image: cimg/node:20.12
     steps:
       - *step-checkout
       - *step-restore-cache
@@ -63,12 +62,12 @@ jobs:
   build-node18:
     <<: *common-build
     docker:
-      - image: circleci/node:18
+      - image: cimg/node:18.20
 
   build-node20:
     <<: *common-build
     docker:
-      - image: circleci/node:20
+      - image: cimg/node:20.12
 
 workflows:
   version: 2
