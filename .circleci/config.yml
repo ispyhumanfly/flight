@@ -74,9 +74,9 @@ workflows:
   version: 2
   build_all:
     jobs:
-      - build-node14:
+      - build-node18:
           <<: *filter-run-always
-      - build-node16:
+      - build-node20:
           <<: *filter-run-always
       - deploy:
           requires:
