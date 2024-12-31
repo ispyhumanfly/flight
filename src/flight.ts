@@ -44,8 +44,10 @@ const redis = new Redis({
 
 if (cluster.isPrimary) {
     const numCPUs = os.cpus().length
+    const maxWorkers = Number(process.env.FLIGHT_MAX_WORKERS) || numCPUs
+    const workersCount = Math.min(maxWorkers, numCPUs)
 
-    for (let i = 0; i < numCPUs; i++) {
+    for (let i = 0; i < workersCount; i++) {
         cluster.fork()
     }
 
