@@ -1,13 +1,17 @@
 {
-    "name": "flight",
-    "version": "1.0.0",
+    "name": "@spytech/flight",
+    "version": "1.0.1",
     "description": "A web server designed for running full stack, component based applications at enterprise scale.",
     "main": "flight.ts",
+    "publishConfig": {
+        "access": "public"
+    },
     "bin": {
-        "flight": "./flight.ts"
+        "flight": "./dist/flight.js"
     },
     "scripts": {
-        "lint": "eslint . --fix --ignore-path .gitignore && prettier -w ."
+        "lint": "eslint . --fix --ignore-path .gitignore && prettier -w .",
+        "build": "rm -rf dist; node_modules/.bin/tsc --project ."
     },
     "repository": {
         "type": "git",
@@ -23,7 +27,7 @@
         "@koa/cors": "^5.0.0",
         "@koa/router": "^12.0.1",
         "@vitejs/plugin-vue": "^5.1.3",
-        "@vue/language-plugin-pug": "^2.1.2",
+        "@vue/language-plugin-pug": "^2.0.29",
         "core-js": "^3.38.1",
         "dotenv": "^16.4.5",
         "esbuild": "^0.23.1",

@@ -4,6 +4,7 @@
         "module": "NodeNext",
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
-        "moduleResolution": "NodeNext"
+        "moduleResolution": "NodeNext",
+        "outDir": "dist"
     }
 }
