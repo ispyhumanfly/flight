@@ -11,7 +11,7 @@ import compress from 'koa-compress'
 import ratelimit from 'koa-ratelimit'
 import cluster from 'cluster'
 import os from 'os'
-import { exec } from 'child_process'
+import { exec, spawn } from 'child_process'
 import serve from 'koa-static'
 import cache from 'koa-redis-cache' // Import the middleware
 import session from 'koa-session'
@@ -133,13 +133,25 @@ if (cluster.isPrimary) {
     })
 
     if (argv.mode === 'development') {
-        exec('npx vite', (error, stdout, stderr) => {
-            if (error) {
-                console.error(`exec error: ${error}`)
-                return
+        console.log('Starting vite in dev mode')
+        const viteProcess = spawn('npx', ['vite'], {
+            stdio: 'inherit',
+            shell: true
+        })
+
+        viteProcess.on('error', (error) => {
+            console.error('Failed to start vite server:', error)
+        })
+
+        viteProcess.on('exit', (code) => {
+            if (code !== 0) {
+                console.error(`Vite server exited with code ${code}`)
             }
-            console.log(`stdout: ${stdout}`)
-            console.error(`stderr: ${stderr}`)
+        })
+
+        process.on('SIGINT', () => {
+            viteProcess.kill('SIGINT')
+            process.exit(0)
         })
 
         console.log(`Vite development server with hot module reload ${process.pid} started on 3001`)
