@@ -1,22 +1,24 @@
 #!ts-node
 
-import Koa from 'koa'
-import Router from '@koa/router'
-import fg from 'fast-glob'
-import path, { resolve } from 'path'
-import cors from '@koa/cors'
-import bodyParser from 'koa-bodyparser'
-import logger from 'koa-logger'
-import compress from 'koa-compress'
-import ratelimit from 'koa-ratelimit'
-import cluster from 'cluster'
-import os from 'os'
 import { exec, spawn } from 'child_process'
-import serve from 'koa-static'
-import cache from 'koa-redis-cache' // Import the middleware
-import session from 'koa-session'
-import RedisStore from 'koa-redis'
+import path, { resolve } from 'path'
+
+import Koa from 'koa'
 import Redis from 'ioredis'
+import RedisStore from 'koa-redis'
+import Router from '@koa/router'
+import bodyParser from 'koa-bodyparser'
+import cache from 'koa-redis-cache' // Import the middleware
+import cluster from 'cluster'
+import compress from 'koa-compress'
+import cors from '@koa/cors'
+import fg from 'fast-glob'
+import logger from 'koa-logger'
+import os from 'os'
+import ratelimit from 'koa-ratelimit'
+import serve from 'koa-static'
+import session from 'koa-session'
+
 // import send from 'koa-send'
 // import historyFallback from 'koa-connect-history-api-fallback'
 
@@ -31,11 +33,9 @@ process.chdir(appHomePath)
 
 console.log(appHomePath)
 
-if (!argv.mode) {
-    argv.mode = 'development'
-}
+const mode = process.env.FLIGHT_MODE || argv.mode || 'production'
 
-console.log = console.log.bind(null, 'Flight:')
+console.log = console.log.bind(null, `Flight (${mode}):`)
 
 const redis = new Redis({
     host: process.env.FLIGHT_REDIS_HOST || 'localhost',
@@ -98,7 +98,7 @@ if (cluster.isPrimary) {
 
     app.use(router.routes()).use(router.allowedMethods())
 
-    if (argv.mode === 'production') {
+    if (mode === 'production') {
         exec('npx vite build', (error, stdout, stderr) => {
             if (error) {
                 console.error(`exec error: ${error}`)
@@ -134,7 +134,7 @@ if (cluster.isPrimary) {
         console.log(`Server worker ${process.pid} started, All backend services are running on port 3000`)
     })
 
-    if (argv.mode === 'development') {
+    if (mode === 'development') {
         console.log('Starting vite in dev mode')
         const viteProcess = spawn('npx', ['vite'], {
             stdio: 'inherit',
