@@ -1,7 +1,6 @@
 #!ts-node
 
 import { exec, spawn } from 'child_process'
-import path, { resolve } from 'path'
 
 import Koa from 'koa'
 import Redis from 'ioredis'
@@ -15,6 +14,7 @@ import cors from '@koa/cors'
 import fg from 'fast-glob'
 import logger from 'koa-logger'
 import os from 'os'
+import path from 'path'
 import ratelimit from 'koa-ratelimit'
 import serve from 'koa-static'
 import session from 'koa-session'
