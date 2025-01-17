@@ -136,7 +136,7 @@ if (cluster.isPrimary) {
 
     if (mode === 'development') {
         console.log('Starting vite in dev mode')
-        const viteProcess = spawn('npx', ['vite', '--port', '3001'], {
+        const viteProcess = spawn('npx', ['vite', '--port', '3001', '--host', '0.0.0.0'], {
             stdio: 'inherit',
             shell: true
         })
