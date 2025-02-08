@@ -10,7 +10,7 @@
         "flight": "./dist/flight.js"
     },
     "scripts": {
-        "lint": "eslint . --fix --ignore-path .gitignore && prettier -w .",
+        "lint": "eslint . --fix && prettier -w .",
         "build": "rm -rf dist; node_modules/.bin/tsc --project ."
     },
     "repository": {
@@ -63,7 +63,8 @@
         "@types/koa-session": "^6.4.5",
         "@types/koa-static": "^4.0.4",
         "@types/node": "^20.14.8",
-        "eslint": "^9.17.0",
+        "eslint": "^9.20.0",
+        "eslint-plugin-jsdoc": "^50.6.3",
         "eslint-plugin-vue": "^9.32.0",
         "prettier": "^3.4.2",
         "ts-node": "^10.9.2",
