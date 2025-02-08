@@ -2,7 +2,7 @@
     "name": "@spytech/flight",
     "version": "1.0.1",
     "description": "A web server designed for running full stack, component based applications at enterprise scale.",
-    "main": "flight.ts",
+    "main": "src/flight.ts",
     "publishConfig": {
         "access": "public"
     },
