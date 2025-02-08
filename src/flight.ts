@@ -19,9 +19,6 @@ import ratelimit from 'koa-ratelimit'
 import serve from 'koa-static'
 import session from 'koa-session'
 
-// import send from 'koa-send'
-// import historyFallback from 'koa-connect-history-api-fallback'
-
 const argv = require('yargs/yargs')(process.argv.slice(2)).argv
 
 if (!argv.app_home) {
@@ -61,19 +58,10 @@ if (cluster.isPrimary) {
     app.keys = ['//input example secret key//']
 
     const SESSION_CONFIG = {
-        // Session configuration options
-        // For example, to change the cookie name:
-        key: 'flightApp', // default
-        maxAge: 86400000, // cookie's expire time, 24 hours in milliseconds
-        // autoCommit: true, /** (boolean) automatically commit headers (default true) */
-        // overwrite: true, /** (boolean) can overwrite or not (default true) */
-        // httpOnly: true, /** (boolean) httpOnly or not (default true) */
-        // signed: true, /** (boolean) signed or not (default true) */
-        // rolling: false, /** (boolean) Force a session identifier cookie to be set on every response. The expiration is reset to the original maxAge, resetting the expiration countdown. (default is false) */
-        // renew: false, /** (boolean) renew session when session is nearly expired, so we can always keep user logged in. (default is false)*/
-        // secure: false, /** (boolean) secure cookie*/
-        sameSite: true /** (string) session cookie sameSite options (default null, don't set it) */,
-        path: '/' /** (string) session cookie path */,
+        key: 'flightApp',  // TODO: Make this tunable by the operator
+        maxAge: 86400000, 
+        sameSite: true,
+        path: '/',
         store: RedisStore({
             client: redis
         })
