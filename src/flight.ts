@@ -89,7 +89,7 @@ if (cluster.isPrimary) {
     backEndFiles.forEach((file) => {
         const serverRoutes = require(path.resolve(file))
 
-        console.log('Found backend file: ' + path.resolve(file))
+        console.log('Found component backend file: ' + path.resolve(file))
 
         if (serverRoutes && serverRoutes.default) {
             router.use(serverRoutes.default)
@@ -99,6 +99,7 @@ if (cluster.isPrimary) {
     app.use(router.routes()).use(router.allowedMethods())
 
     if (mode === 'production') {
+        console.log('Starting flight in production mode')
         exec('npx vite build', (error, stdout, stderr) => {
             if (error) {
                 console.error(`exec error: ${error}`)
@@ -121,7 +122,7 @@ if (cluster.isPrimary) {
                     reset: 'Rate-Limit-Reset',
                     total: 'Rate-Limit-Total'
                 },
-                max: 100,
+                max: 120,
                 disableHeader: false
             })
         )
@@ -135,8 +136,8 @@ if (cluster.isPrimary) {
     })
 
     if (mode === 'development') {
-        console.log('Starting vite in dev mode')
-        const viteProcess = spawn('npx', ['vite'], {
+        console.log('Starting flight in development mode')
+        const viteProcess = spawn('npx', ['vite', '--port', '3001', '--host', '0.0.0.0'], {
             stdio: 'inherit',
             shell: true
         })

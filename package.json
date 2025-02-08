@@ -62,7 +62,7 @@
         "@types/koa-redis-cache": "^3.0.4",
         "@types/koa-session": "^6.4.5",
         "@types/koa-static": "^4.0.4",
-        "@types/node": "^20.14.8",
+        "@types/node": "^20.11.0",
         "eslint": "^9.20.0",
         "eslint-plugin-jsdoc": "^50.6.3",
         "eslint-plugin-vue": "^9.32.0",
