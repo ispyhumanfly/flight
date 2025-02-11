@@ -21,8 +21,17 @@ import session from 'koa-session'
 
 const argv = require('yargs/yargs')(process.argv.slice(2)).argv
 
+
 if (!argv.app_home) {
     argv.app_home = '.'
+}
+
+if (!argv.app_key) {
+    argv.app_key = 'flightApp'
+}
+
+if (!argv.app_secret) {
+    argv.app_secret = 'the best secret key in the world'
 }
 
 const appHomePath = path.resolve(argv.app_home)
@@ -55,10 +64,10 @@ if (cluster.isPrimary) {
     const app = new Koa()
     app.use(logger())
 
-    app.keys = ['//input example secret key//']
+    app.keys = argv.app_secret.split(',')
 
     const SESSION_CONFIG = {
-        key: 'flightApp',  // TODO: Make this tunable by the operator
+        key: argv.app_key,  // TODO: Make this tunable by the operator
         maxAge: 86400000, 
         sameSite: true,
         path: '/',
