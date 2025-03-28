@@ -67,7 +67,7 @@ if (cluster.isPrimary) {
     app.keys = argv.app_secret.split(',')
 
     const SESSION_CONFIG = {
-        key: argv.app_key,  // TODO: Make this tunable by the operator
+        key: argv.app_key,
         maxAge: 86400000, 
         sameSite: true,
         path: '/',
