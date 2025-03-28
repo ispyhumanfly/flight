@@ -92,13 +92,46 @@ Available CLI options:
 ```
 my-app/
 ├── components/           # Application components
-│   ├── component-name/
-│   │   ├── index.ts     # Component logic
-│   │   ├── view.tsx     # Component view
-│   │   └── backend.ts   # Backend routes
+│   ├── component-name/   # Component directory
+│   │   ├── Index.vue    # Vue component view
+│   │   └── Index.backend.ts  # Backend routes and logic
 ├── assets/              # Static assets
 ├── dist/                # Production build output
 └── package.json
+```
+
+Each component follows a simple structure:
+- `Index.vue`: Contains the Vue component template, script, and styles
+- `Index.backend.ts`: Contains the backend routes and logic for the component
+
+Example component files:
+
+`components/hello/Index.vue`:
+```vue
+<template>
+  <div>
+    <h1>{{ message }}</h1>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+
+const message = ref('Hello from Flight!')
+</script>
+```
+
+`components/hello/Index.backend.ts`:
+```typescript
+import Router from '@koa/router';
+
+const router = new Router();
+
+router.get('/hello', async (ctx) => {
+    ctx.body = { message: 'Hello from Flight!' };
+});
+
+export default router.routes();
 ```
 
 ## Configuration
