@@ -29,25 +29,63 @@ yarn add @spytech/flight
 
 ## Quick Start
 
-1. Create a new Flight project:
-
+1. Create a new project directory and initialize:
 ```bash
-npx create-flight-app my-app
-cd my-app
+mkdir my-flight-app
+cd my-flight-app
+npm init -y
 ```
 
-2. Start the development server:
-
+2. Install Flight and its dependencies:
 ```bash
-npm run dev
+npm install @ispyhumanfly/flight ioredis
 ```
 
-3. Build for production:
-
+3. Ensure Redis is running locally or set environment variables:
 ```bash
-npm run build
-npm start
+# Default values shown below
+export FLIGHT_REDIS_HOST=localhost
+export FLIGHT_REDIS_PORT=6379
 ```
+
+4. Create a component with a backend route:
+```bash
+mkdir -p components/hello
+```
+
+Create `components/hello/hello.backend.ts`:
+```typescript
+import Router from '@koa/router';
+
+const router = new Router();
+
+router.get('/hello', async (ctx) => {
+    ctx.body = { message: 'Hello from Flight!' };
+});
+
+export default router.routes();
+```
+
+5. Start the server:
+
+Development mode:
+```bash
+node flight.js --mode development --app_home .
+# Starts development server on port 3001 with HMR
+# Backend API available on port 3000
+```
+
+Production mode:
+```bash
+node flight.js --mode production --app_home .
+# Builds and serves application on port 3000
+```
+
+Available CLI options:
+- `--app_home`: Application root directory (default: current directory)
+- `--app_key`: Application key for sessions (default: 'flightApp')
+- `--app_secret`: Secret key for session encryption (default: 'the best secret key in the world')
+- `--mode`: 'development' or 'production' (default: 'production')
 
 ## Project Structure
 
