@@ -130,17 +130,69 @@ Production mode includes:
 - Cluster mode for load balancing
 - Production server on port 3000
 
-## Improvements Over Avian
+## Comparison with Avian
 
-Flight builds upon Avian's solid foundation while introducing several key improvements:
+Flight is a modern reimagining of the Avian framework, making several architectural improvements while maintaining the core philosophy of component-driven applications. Here are the key differences:
 
-1. **Modern Framework**: Switched from Express to Koa.js for better async/await support and middleware handling
-2. **Vite Integration**: Replaced Webpack with Vite for faster development and better build performance
-3. **TypeScript First**: Native TypeScript support throughout the framework
-4. **Simplified Component Structure**: More intuitive component organization
-5. **Better Development Experience**: Hot Module Replacement and faster refresh cycles
-6. **Enhanced Security**: Built-in rate limiting and improved session handling
-7. **Modern Tooling**: Updated dependencies and better integration with current web standards
+### Framework Evolution
+- **Koa Instead of Express**: Flight uses Koa.js as its foundation instead of Express, providing better async/await support and a more modern middleware architecture
+- **Vite Instead of Webpack**: Replaced Webpack bundling with Vite for significantly faster development experience and simpler configuration
+- **TypeScript First**: While Avian supported TypeScript, Flight is built with TypeScript from the ground up
+
+### Architectural Improvements
+1. **Simplified Component Structure**
+   - Avian: Complex component hierarchy with multiple file types (.client, .server, .view, .config)
+   - Flight: Streamlined with `.backend.ts` files and modern frontend frameworks
+   
+2. **Development Experience**
+   - Avian: Webpack-based bundling with slower rebuild times
+   - Flight: Vite-powered development with instant HMR and no bundle step in development
+
+3. **Session Management**
+   - Avian: Express-session with Redis store
+   - Flight: Koa-session with Redis store, improved security defaults
+
+4. **Performance Features**
+   - Built-in rate limiting
+   - Redis-based caching
+   - Automatic compression in production
+   - Cluster mode for CPU utilization
+
+5. **Configuration**
+   - Avian: Complex webpack configuration and multiple build modes
+   - Flight: Simplified configuration with sensible defaults and Vite's zero-config approach
+
+### What's Different
+
+1. **Removed Features**
+   - Removed Webpack-specific configurations
+   - Removed legacy view engine support (EJS, Twig, Pug)
+   - Removed Sentry integration (can be added as middleware if needed)
+   - Removed built-in cron job scheduler (better handled by dedicated services)
+
+2. **New Features**
+   - Native ESM support
+   - Built-in CORS support
+   - Improved Redis integration
+   - Better security defaults
+   - Simpler API for backend routes
+   - Modern frontend tooling support
+
+3. **Simplified Architecture**
+   - Reduced configuration complexity
+   - More intuitive component organization
+   - Better separation of concerns
+   - Modern middleware approach
+
+### Migration from Avian
+
+If you're migrating from Avian, the main changes you'll need to make are:
+
+1. Update your component structure to use `.backend.ts` files
+2. Move from Express middleware to Koa middleware
+3. Update your frontend bundling to use Vite
+4. Adapt to the new session management system
+5. Update your static file serving configuration
 
 ## Requirements
 
