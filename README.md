@@ -1,6 +1,6 @@
 # Flight
 
-Flight is a modern, high-performance web application server built on Node.js, designed for building scalable, component-driven applications. It represents the evolution of the [Avian](https://github.com/ispyhumanfly/avian) framework, incorporating modern best practices and improved developer experience.
+Flight is a modern, high-performance web application server built on Node.js, designed for building scalable, component-driven applications. It represents the evolution of the [Avian](https://github.com/ispyhumanfly/avian) component application server, incorporating modern best practices and improved developer experience.
 
 ## Overview
 
