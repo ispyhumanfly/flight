@@ -34,6 +34,21 @@ if (!argv.app_secret) {
     argv.app_secret = 'the best secret key in the world'
 }
 
+// Set default port values
+if (!argv.port) {
+    // Check for environment variable first, then use default
+    argv.port = process.env.FLIGHT_PORT || 3000
+}
+
+// Convert port to number
+argv.port = Number(argv.port)
+
+// Validate port is a valid number
+if (isNaN(argv.port) || argv.port < 1 || argv.port > 65535) {
+    console.error('Invalid port specified. Using default port 3000.')
+    argv.port = 3000
+}
+
 const appHomePath = path.resolve(argv.app_home)
 process.chdir(appHomePath)
 
@@ -128,7 +143,7 @@ if (cluster.isPrimary) {
         console.log('App served out of dist/ and available on port 3000')
     }
 
-    app.listen(3000, () => {
+    app.listen(argv.port, () => {
         console.log(`Server worker ${process.pid} started, All backend services are running on port 3000`)
     })
 
