@@ -153,7 +153,12 @@ if (cluster.isPrimary) {
         )
         app.use(cache({ expire: 30 /* Cache time in seconds */ }))
         app.use(serve(process.env.FLIGHT_DIST_PATH || '../dist'))
-        console.log(`App served out of dist/ and available on port ${argv.port}`)
+
+        if (!argv.disable_vite) {
+            console.log(`App served out of dist/ and available on port ${argv.port}`)
+        } else {
+            console.log(`App served out of ${appHomePath} and available on port ${argv.port}`)
+        }
     }
 
     app.listen(argv.port, () => {
