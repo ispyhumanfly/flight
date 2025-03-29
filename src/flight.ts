@@ -49,6 +49,16 @@ if (isNaN(argv.port) || argv.port < 1 || argv.port > 65535) {
     argv.port = 3000
 }
 
+// Set default value for disable_vite flag
+if (argv.disable_vite === undefined) {
+    // Check for environment variable first, then default to false
+    argv.disable_vite = process.env.FLIGHT_DISABLE_VITE === 'true' ? true : false
+}
+
+// Ensure the value is a boolean
+argv.disable_vite = Boolean(argv.disable_vite)
+
+
 const appHomePath = path.resolve(argv.app_home)
 process.chdir(appHomePath)
 
@@ -112,14 +122,17 @@ if (cluster.isPrimary) {
 
     if (mode === 'production') {
         console.log('Starting flight in production mode')
-        exec('npx vite build', (error, stdout, stderr) => {
-            if (error) {
-                console.error(`exec error: ${error}`)
+
+        if (!argv.disable_vite) {
+            exec('npx vite build', (error, stdout, stderr) => {
+                if (error) {
+                    console.error(`exec error: ${error}`)
                 return
             }
-            console.log(`stdout: ${stdout}`)
-            console.error(`stderr: ${stderr}`)
-        })
+                console.log(`stdout: ${stdout}`)
+                console.error(`stderr: ${stderr}`)
+            })
+        }
 
         app.use(compress())
         app.use(
