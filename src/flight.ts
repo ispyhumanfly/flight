@@ -21,6 +21,17 @@ import session from 'koa-session'
 
 const argv = require('yargs/yargs')(process.argv.slice(2)).argv
 
+// Set default session duration (24 hours in milliseconds)
+const DEFAULT_SESSION_DURATION = 86400000; // 24 hours in milliseconds
+
+// Get session duration from environment variable or command line argument
+argv.session_duration = Number(process.env.FLIGHT_SESSION_DURATION_MS) || argv.session_duration;
+
+// Validate session duration
+if (isNaN(argv.session_duration) || argv.session_duration < 0) {
+    console.error('Invalid session duration specified. Using default of 24 hours (86400000ms).');
+    argv.session_duration = DEFAULT_SESSION_DURATION;
+}
 
 if (!argv.app_home) {
     argv.app_home = '.'
@@ -93,7 +104,7 @@ if (cluster.isPrimary) {
 
     const SESSION_CONFIG = {
         key: argv.app_key,
-        maxAge: 86400000, 
+        maxAge: argv.session_duration, 
         sameSite: true,
         path: '/',
         store: RedisStore({
