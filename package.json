@@ -16,14 +16,14 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/bartonmalow/flight.git"
+        "url": "git+https://github.com/ispyhumanfly/flight.git"
     },
     "author": "",
     "license": "MIT",
     "bugs": {
-        "url": "https://github.com/bartonmalow/flight/issues"
+        "url": "https://github.com/ispyhumanfly/flight/issues"
     },
-    "homepage": "https://github.com/bartonmalow/flight#readme",
+    "homepage": "https://github.com/ispyhumanfly/flight#readme",
     "dependencies": {
         "@koa/cors": "^5.0.0",
         "@koa/router": "^13.1.0",
