@@ -38,7 +38,7 @@ npm init -y
 
 2. Install Flight and its dependencies:
 ```bash
-npm install @ispyhumanfly/flight ioredis
+npm install @spytech/flight ioredis
 ```
 
 3. Ensure Redis is running locally or set environment variables:
