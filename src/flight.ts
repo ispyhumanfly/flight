@@ -152,13 +152,13 @@ if (cluster.isPrimary) {
                 db: redis,
                 duration: 60000,
                 errorMessage: 'Sometimes You Just Have to Slow Down.',
-                id: (ctx) => ctx.ip,
+                id: (ctx) => ctx.get('x-forwarded-for') || ctx.ip,
                 headers: {
                     remaining: 'Rate-Limit-Remaining',
                     reset: 'Rate-Limit-Reset',
                     total: 'Rate-Limit-Total'
                 },
-                max: 120,
+                max: 1200,
                 disableHeader: false
             })
         )
