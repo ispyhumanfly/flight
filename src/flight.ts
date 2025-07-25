@@ -116,7 +116,13 @@ if (cluster.isPrimary) {
 
     const router = new Router()
 
-    app.use(cors()).use(bodyParser())
+    argv.payload_limit = process.env.FLIGHT_PAYLOAD_LIMIT || argv.payload_limit || '1mb'
+
+    app.use(cors()).use(
+        bodyParser({
+            jsonLimit: argv.payload_limit
+        })
+    )
 
     const backEndFiles = fg.sync('**/*.backend.ts')
     backEndFiles.forEach((file) => {
