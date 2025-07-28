@@ -51,6 +51,10 @@ if (!argv.port) {
     argv.port = process.env.FLIGHT_PORT || 3000
 }
 
+if (!argv.payload_limit) {
+    argv.payload_limit = process.env.FLIGHT_PAYLOAD_LIMIT || '1mb'
+}
+
 // Convert port to number
 argv.port = Number(argv.port)
 
@@ -116,7 +120,6 @@ if (cluster.isPrimary) {
 
     const router = new Router()
 
-    argv.payload_limit = process.env.FLIGHT_PAYLOAD_LIMIT || argv.payload_limit || '1mb'
 
     app.use(cors()).use(
         bodyParser({
