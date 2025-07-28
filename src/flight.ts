@@ -51,6 +51,10 @@ if (!argv.port) {
     argv.port = process.env.FLIGHT_PORT || 3000
 }
 
+if (!argv.payload_limit) {
+    argv.payload_limit = process.env.FLIGHT_PAYLOAD_LIMIT || '1mb'
+}
+
 // Convert port to number
 argv.port = Number(argv.port)
 
@@ -116,7 +120,12 @@ if (cluster.isPrimary) {
 
     const router = new Router()
 
-    app.use(cors()).use(bodyParser())
+
+    app.use(cors()).use(
+        bodyParser({
+            jsonLimit: argv.payload_limit
+        })
+    )
 
     const backEndFiles = fg.sync('**/*.backend.ts')
     backEndFiles.forEach((file) => {
