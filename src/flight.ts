@@ -7,11 +7,11 @@ import Redis from 'ioredis'
 import RedisStore from 'koa-redis'
 import Router from '@koa/router'
 import bodyParser from 'koa-bodyparser'
-import cache from 'koa-redis-cache' // Import the middleware
 import cluster from 'cluster'
 import compress from 'koa-compress'
 import cors from '@koa/cors'
 import fg from 'fast-glob'
+import koaCash from 'koa-cash'
 import logger from 'koa-logger'
 import os from 'os'
 import path from 'path'
@@ -22,15 +22,15 @@ import session from 'koa-session'
 const argv = require('yargs/yargs')(process.argv.slice(2)).argv
 
 // Set default session duration (24 hours in milliseconds)
-const DEFAULT_SESSION_DURATION = 86400000; // 24 hours in milliseconds
+const DEFAULT_SESSION_DURATION = 86400000 // 24 hours in milliseconds
 
 // Get session duration from environment variable or command line argument
-argv.session_duration = Number(process.env.FLIGHT_SESSION_DURATION_MS) || argv.session_duration;
+argv.session_duration = Number(process.env.FLIGHT_SESSION_DURATION_MS) || argv.session_duration
 
 // Validate session duration
 if (isNaN(argv.session_duration) || argv.session_duration < 0) {
-    console.error('Invalid session duration specified. Using default of 24 hours (86400000ms).');
-    argv.session_duration = DEFAULT_SESSION_DURATION;
+    console.error('Invalid session duration specified. Using default of 24 hours (86400000ms).')
+    argv.session_duration = DEFAULT_SESSION_DURATION
 }
 
 if (!argv.app_home) {
@@ -73,7 +73,6 @@ if (argv.disable_vite === undefined) {
 // Ensure the value is a boolean
 argv.disable_vite = Boolean(argv.disable_vite)
 
-
 const appHomePath = path.resolve(argv.app_home)
 process.chdir(appHomePath)
 
@@ -108,7 +107,7 @@ if (cluster.isPrimary) {
 
     const SESSION_CONFIG = {
         key: argv.app_key,
-        maxAge: argv.session_duration, 
+        maxAge: argv.session_duration,
         sameSite: true,
         path: '/',
         store: RedisStore({
@@ -119,7 +118,6 @@ if (cluster.isPrimary) {
     app.use(session(SESSION_CONFIG, app))
 
     const router = new Router()
-
 
     app.use(cors()).use(
         bodyParser({
@@ -147,8 +145,8 @@ if (cluster.isPrimary) {
             exec('npx vite build', (error, stdout, stderr) => {
                 if (error) {
                     console.error(`exec error: ${error}`)
-                return
-            }
+                    return
+                }
                 console.log(`stdout: ${stdout}`)
                 console.error(`stderr: ${stderr}`)
             })
@@ -171,7 +169,12 @@ if (cluster.isPrimary) {
                 disableHeader: false
             })
         )
-        app.use(cache({ expire: 30 /* Cache time in seconds */ }))
+        app.use(
+            koaCash({
+                get: (key) => redis.get(key),
+                set: (key, value) => redis.set(key, value, 'EX', 30)
+            })
+        )
         app.use(serve(process.env.FLIGHT_DIST_PATH || '../dist'))
 
         if (!argv.disable_vite) {
