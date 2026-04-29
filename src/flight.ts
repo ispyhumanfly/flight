@@ -80,7 +80,18 @@ console.log(appHomePath)
 
 const mode = process.env.FLIGHT_MODE || argv.mode || 'production'
 
-console.log = console.log.bind(null, `Flight (${mode}):`)
+/** Prefix without breaking printf-style logs (koa-logger uses `%s` as the first argument). */
+const flightModeLabel = `Flight (${mode}):`
+const origConsoleLog = console.log.bind(console)
+console.log = (first?: unknown, ...rest: unknown[]): void => {
+    if (typeof first === 'string' && /%[sdjifoO%]/.test(first)) {
+        origConsoleLog(`${flightModeLabel} ${first}`, ...rest)
+    } else if (first !== undefined) {
+        origConsoleLog(flightModeLabel, first, ...rest)
+    } else {
+        origConsoleLog(flightModeLabel)
+    }
+}
 
 const redis = new Redis({
     host: process.env.FLIGHT_REDIS_HOST || 'localhost',
