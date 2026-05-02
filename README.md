@@ -22,10 +22,12 @@ Flight takes the best concepts from Avian and enhances them with modern tooling 
 ## Installation
 
 ```bash
-npm install @spytech/flight
+npm install @thoughtpivot/flight
 # or
-yarn add @spytech/flight
+yarn add @thoughtpivot/flight
 ```
+
+Previously published on npm as `@spytech/flight`; switch your dependency to `@thoughtpivot/flight`.
 
 ## Quick Start
 
@@ -40,7 +42,7 @@ npm init -y
 2. Install Flight and its dependencies:
 
 ```bash
-npm install @spytech/flight ioredis
+npm install @thoughtpivot/flight ioredis
 ```
 
 3. Ensure Redis is running locally or set environment variables:
