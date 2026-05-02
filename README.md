@@ -30,6 +30,7 @@ yarn add @spytech/flight
 ## Quick Start
 
 1. Create a new project directory and initialize:
+
 ```bash
 mkdir my-flight-app
 cd my-flight-app
@@ -37,11 +38,13 @@ npm init -y
 ```
 
 2. Install Flight and its dependencies:
+
 ```bash
 npm install @spytech/flight ioredis
 ```
 
 3. Ensure Redis is running locally or set environment variables:
+
 ```bash
 # Default values shown below
 export FLIGHT_REDIS_HOST=localhost
@@ -49,26 +52,29 @@ export FLIGHT_REDIS_PORT=6379
 ```
 
 4. Create a component with a backend route:
+
 ```bash
 mkdir -p components/hello
 ```
 
 Create `components/hello/hello.backend.ts`:
-```typescript
-import Router from '@koa/router';
 
-const router = new Router();
+```typescript
+import Router from '@koa/router'
+
+const router = new Router()
 
 router.get('/hello', async (ctx) => {
-    ctx.body = { message: 'Hello from Flight!' };
-});
+    ctx.body = { message: 'Hello from Flight!' }
+})
 
-export default router.routes();
+export default router.routes()
 ```
 
 5. Start the server:
 
 Development mode:
+
 ```bash
 node flight.js --mode development --app_home .
 # Starts development server on port 3001 with HMR
@@ -76,12 +82,14 @@ node flight.js --mode development --app_home .
 ```
 
 Production mode:
+
 ```bash
 node flight.js --mode production --app_home .
 # Builds and serves application on port 3000
 ```
 
 Available CLI options:
+
 - `--app_home`: Application root directory (default: current directory)
 - `--app_key`: Application key for sessions (default: 'flightApp')
 - `--app_secret`: Secret key for session encryption (default: 'the best secret key in the world')
@@ -101,17 +109,19 @@ my-app/
 ```
 
 Each component follows a simple structure:
+
 - `Index.vue`: Contains the Vue component template, script, and styles
 - `Index.backend.ts`: Contains the backend routes and logic for the component
 
 Example component files:
 
 `components/hello/Index.vue`:
+
 ```vue
 <template>
-  <div>
-    <h1>{{ message }}</h1>
-  </div>
+    <div>
+        <h1>{{ message }}</h1>
+    </div>
 </template>
 
 <script setup lang="ts">
@@ -122,16 +132,17 @@ const message = ref('Hello from Flight!')
 ```
 
 `components/hello/Index.backend.ts`:
-```typescript
-import Router from '@koa/router';
 
-const router = new Router();
+```typescript
+import Router from '@koa/router'
+
+const router = new Router()
 
 router.get('/hello', async (ctx) => {
-    ctx.body = { message: 'Hello from Flight!' };
-});
+    ctx.body = { message: 'Hello from Flight!' }
+})
 
-export default router.routes();
+export default router.routes()
 ```
 
 ## Configuration
@@ -148,6 +159,7 @@ FLIGHT_MAX_WORKERS=4
 ## Development Mode
 
 In development mode, Flight provides:
+
 - Hot Module Replacement (HMR)
 - Fast refresh for React components
 - Detailed error messages
@@ -156,6 +168,7 @@ In development mode, Flight provides:
 ## Production Mode
 
 Production mode includes:
+
 - Optimized builds
 - Rate limiting
 - Response compression
@@ -168,54 +181,55 @@ Production mode includes:
 Flight is a modern reimagining of the Avian framework, making several architectural improvements while maintaining the core philosophy of component-driven applications. Here are the key differences:
 
 ### Framework Evolution
+
 - **Koa Instead of Express**: Flight uses Koa.js as its foundation instead of Express, providing better async/await support and a more modern middleware architecture
 - **Vite Instead of Webpack**: Replaced Webpack bundling with Vite for significantly faster development experience and simpler configuration
 - **TypeScript First**: While Avian supported TypeScript, Flight is built with TypeScript from the ground up
 
 ### Architectural Improvements
+
 1. **Simplified Component Structure**
-   - Avian: Complex component hierarchy with multiple file types (.client, .server, .view, .config)
-   - Flight: Streamlined with `.backend.ts` files and modern frontend frameworks
-   
+    - Avian: Complex component hierarchy with multiple file types (.client, .server, .view, .config)
+    - Flight: Streamlined with `.backend.ts` files and modern frontend frameworks
 2. **Development Experience**
-   - Avian: Webpack-based bundling with slower rebuild times
-   - Flight: Vite-powered development with instant HMR and no bundle step in development
+    - Avian: Webpack-based bundling with slower rebuild times
+    - Flight: Vite-powered development with instant HMR and no bundle step in development
 
 3. **Session Management**
-   - Avian: Express-session with Redis store
-   - Flight: Koa-session with Redis store, improved security defaults
+    - Avian: Express-session with Redis store
+    - Flight: Koa-session with Redis store, improved security defaults
 
 4. **Performance Features**
-   - Built-in rate limiting
-   - Redis-based caching
-   - Automatic compression in production
-   - Cluster mode for CPU utilization
+    - Built-in rate limiting
+    - Redis-based caching
+    - Automatic compression in production
+    - Cluster mode for CPU utilization
 
 5. **Configuration**
-   - Avian: Complex webpack configuration and multiple build modes
-   - Flight: Simplified configuration with sensible defaults and Vite's zero-config approach
+    - Avian: Complex webpack configuration and multiple build modes
+    - Flight: Simplified configuration with sensible defaults and Vite's zero-config approach
 
 ### What's Different
 
 1. **Removed Features**
-   - Removed Webpack-specific configurations
-   - Removed legacy view engine support (EJS, Twig, Pug)
-   - Removed Sentry integration (can be added as middleware if needed)
-   - Removed built-in cron job scheduler (better handled by dedicated services)
+    - Removed Webpack-specific configurations
+    - Removed legacy view engine support (EJS, Twig, Pug)
+    - Removed Sentry integration (can be added as middleware if needed)
+    - Removed built-in cron job scheduler (better handled by dedicated services)
 
 2. **New Features**
-   - Native ESM support
-   - Built-in CORS support
-   - Improved Redis integration
-   - Better security defaults
-   - Simpler API for backend routes
-   - Modern frontend tooling support
+    - Native ESM support
+    - Built-in CORS support
+    - Improved Redis integration
+    - Better security defaults
+    - Simpler API for backend routes
+    - Modern frontend tooling support
 
 3. **Simplified Architecture**
-   - Reduced configuration complexity
-   - More intuitive component organization
-   - Better separation of concerns
-   - Modern middleware approach
+    - Reduced configuration complexity
+    - More intuitive component organization
+    - Better separation of concerns
+    - Modern middleware approach
 
 ### Migration from Avian
 
