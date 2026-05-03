@@ -260,3 +260,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ## Acknowledgments
 
 Flight is built upon the solid foundation laid by the [Avian](https://github.com/ispyhumanfly/avian) framework, created by FlyPaper Technologies, LLC. We're grateful for their pioneering work in component-driven architecture.
+
+## ThoughtPivot
+
+Flight is a [ThoughtPivot](https://github.com/thoughtpivot) technology: developed and maintained as part of the ThoughtPivot organization and ecosystem.
