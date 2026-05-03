@@ -97,6 +97,7 @@ node flight.js --mode production --app_home .
 Available CLI options:
 
 - `--app_home`: Application root directory (default: current directory)
+- `--exclude_paths` / `--exclude-paths`: Directories under `app_home` to omit when discovering `**/*.backend.ts` routes. Repeat the flag (`--exclude_paths node_modules --exclude_paths dist`) or use commas (`--exclude_paths node_modules,dist`). Also accepts `FLIGHT_EXCLUDE_PATHS` (comma-separated). Paths must stay inside `app_home`.
 - `--app_key`: Application key for sessions (default: 'flightApp')
 - `--app_secret`: Secret key for session encryption (default: 'the best secret key in the world')
 - `--mode`: 'development' or 'production' (default: 'production')

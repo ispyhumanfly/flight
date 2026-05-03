@@ -29,13 +29,65 @@ interface FlightArgv {
     payload_limit?: string
     disable_vite?: boolean
     mode?: string
+    exclude_paths?: string[]
+}
+
+function normalizeExcludePaths(value: unknown): string[] {
+    if (value == null || value === '') return []
+    const parts = Array.isArray(value) ? value : [value]
+    const out: string[] = []
+    for (const p of parts) {
+        const s = String(p).trim()
+        if (!s) continue
+        out.push(
+            ...s
+                .split(',')
+                .map((x) => x.trim())
+                .filter(Boolean)
+        )
+    }
+    return out
+}
+
+function dedupeStrings(items: string[]): string[] {
+    return [...new Set(items)]
+}
+
+/** Build fast-glob ignore globs for trees rooted under `appRootAbs`. */
+function backendDiscoveryIgnorePatterns(appRootAbs: string, excludeRelativeDirs: string[]): string[] {
+    const patterns: string[] = []
+    for (const raw of excludeRelativeDirs) {
+        const trimmed = raw.trim()
+        if (!trimmed) continue
+        const resolved = path.resolve(appRootAbs, trimmed)
+        const rel = path.relative(appRootAbs, resolved)
+        const relPosix = rel.replace(/\\/g, '/')
+        if (!relPosix || relPosix.startsWith('..') || path.isAbsolute(rel)) {
+            console.warn(`Flight: exclude_paths entry skipped (outside app_home): ${trimmed}`)
+            continue
+        }
+        patterns.push(`${relPosix}/**`)
+    }
+    return patterns
 }
 
 // tsx (and similar loaders) may expose require('yargs/yargs') as { default: factory } instead of factory.
-type YargsFactoryFn = (args: string[]) => { argv: FlightArgv }
-const _yargs = require('yargs/yargs') as YargsFactoryFn | { default: YargsFactoryFn }
-const yargsFactory: YargsFactoryFn = typeof _yargs === 'function' ? _yargs : _yargs.default
-const argv = yargsFactory(process.argv.slice(2)).argv
+interface YargsInstance {
+    option(key: string, opts: Record<string, unknown>): YargsInstance
+    parseSync(): FlightArgv
+}
+type YargsFn = (args: string[]) => YargsInstance
+const _yargs = require('yargs/yargs') as YargsFn | { default: YargsFn }
+const yargsEntry: YargsFn = typeof _yargs === 'function' ? _yargs : _yargs.default
+const argv = yargsEntry(process.argv.slice(2))
+    .option('exclude_paths', {
+        alias: 'exclude-paths',
+        type: 'array',
+        string: true,
+        default: [],
+        describe: 'Directories under app_home to skip when discovering **/*.backend.ts (repeat flag or comma-separated)'
+    })
+    .parseSync() as FlightArgv
 
 // Set default session duration (24 hours in milliseconds)
 const DEFAULT_SESSION_DURATION = 86400000 // 24 hours in milliseconds
@@ -90,9 +142,21 @@ if (argv.disable_vite === undefined) {
 argv.disable_vite = Boolean(argv.disable_vite)
 
 const appHomePath = path.resolve(argv.app_home)
+const excludePathsConfigured = dedupeStrings([
+    ...normalizeExcludePaths(argv.exclude_paths),
+    ...normalizeExcludePaths(process.env.FLIGHT_EXCLUDE_PATHS)
+])
+const backendDiscoveryIgnores = backendDiscoveryIgnorePatterns(appHomePath, excludePathsConfigured)
+
 process.chdir(appHomePath)
 
 console.log(appHomePath)
+if (backendDiscoveryIgnores.length > 0) {
+    console.log(
+        'Flight: excluding **/*.backend.ts discovery under:',
+        backendDiscoveryIgnores.map((g) => g.replace(/\*\*$/, '')).join(', ')
+    )
+}
 
 const mode = process.env.FLIGHT_MODE || argv.mode || 'production'
 
@@ -152,7 +216,9 @@ if (cluster.isPrimary) {
         })
     )
 
-    const backEndFiles = fg.sync('**/*.backend.ts')
+    const backEndFiles = fg.sync('**/*.backend.ts', {
+        ignore: backendDiscoveryIgnores
+    })
     backEndFiles.forEach((file) => {
         const serverRoutes = require(path.resolve(file))
 
