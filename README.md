@@ -1,6 +1,6 @@
 # Flight
 
-Flight is a modern, high-performance web application server built on Node.js, designed for building scalable, component-driven applications. It represents the evolution of the [Avian](https://github.com/ispyhumanfly/avian) component application server, incorporating modern best practices and improved developer experience.
+Flight is a modern, high-performance web application server built on Node.js, designed for building scalable, component-driven applications. It is the successor to [Avian](https://github.com/ispyhumanfly/avian): originally created by ThoughtPivot, handed to FlyPaper Technologies, LLC, where Avian matured—Flight builds on those advancements with modern tooling and developer experience.
 
 ## Overview
 
@@ -259,8 +259,10 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## Acknowledgments
 
-Flight is built upon the solid foundation laid by the [Avian](https://github.com/ispyhumanfly/avian) framework, created by FlyPaper Technologies, LLC. We're grateful for their pioneering work in component-driven architecture.
+Flight succeeds the [Avian](https://github.com/ispyhumanfly/avian) framework. Avian began at ThoughtPivot and was later handed to FlyPaper Technologies, LLC, where it grew into the platform many teams relied on. Flight is born from that lineage—the ideas and hardening FlyPaper contributed to Avian—carried forward as ThoughtPivot’s next-generation server.
+
+We’re grateful to FlyPaper Technologies for stewarding Avian and advancing component-driven architecture.
 
 ## ThoughtPivot
 
-Flight is a [ThoughtPivot](https://github.com/thoughtpivot) technology: developed and maintained as part of the ThoughtPivot organization and ecosystem.
+Today Flight is an official ThoughtPivot technology: developed and maintained by the [ThoughtPivot](https://github.com/thoughtpivot) organization as part of its ecosystem.
