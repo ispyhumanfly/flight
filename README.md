@@ -1,23 +1,23 @@
+<p align="center">
+  <img src="readme-assets/thoughtpivot-logo.svg" alt="ThoughtPivot" width="280" />
+</p>
+
 # Flight
 
-Flight is a modern, high-performance web application server built on Node.js, designed for building scalable, component-driven applications. It is the successor to [Avian](https://github.com/ispyhumanfly/avian): originally created by ThoughtPivot, handed to FlyPaper Technologies, LLC, where Avian matured—Flight builds on those advancements with modern tooling and developer experience.
+**Flight** is a Node.js application server for teams who want something **fast**, **boring in the good way**, and **ready for serious traffic**. You bring your own hosting—there is no lock-in to a proprietary edge or a single vendor’s deployment story. It fits **twelve-factor** style workflows: configuration via environment variables, horizontal scaling, and state kept where it belongs (for Flight, that includes **Redis** for sessions and cache-friendly layers).
 
-## Overview
+Think **platform-agnostic**: not framework-as-a-platform, but a clear runtime you can run wherever Node runs—VMs, Kubernetes, bare metal, your cloud of choice. Flight is aimed at **hyperscale-friendly** designs (cluster workers out of the box), **ephemeral** processes, and **component-shaped** backends so routes stay colocated with the features they serve. **Vue** and **Vite** are first-class today; **React** support is on the roadmap.
 
-Flight takes the best concepts from Avian and enhances them with modern tooling and practices. It provides a robust foundation for building enterprise-grade applications while maintaining simplicity and developer productivity.
+Flight is **open source** from **[ThoughtPivot](https://github.com/thoughtpivot)**.
 
-### Key Features
+## Highlights
 
-- **Modern Stack**: Built on Koa.js with TypeScript support
-- **Component-Based Architecture**: Organize your application into reusable components
-- **Built-in Development Server**: Powered by Vite for lightning-fast development
-- **Production-Ready**: Includes rate limiting, compression, and caching out of the box
-- **Cluster Mode**: Automatic load balancing across CPU cores
-- **Redis Integration**: Built-in support for session management and caching
-- **TypeScript First**: Native TypeScript support throughout the framework
-- **Hot Module Replacement**: Fast development with instant updates
-- **CORS Enabled**: Ready for modern web applications
-- **Security Features**: Rate limiting, secure session handling, and more
+- **Performance-focused**: Cluster mode, compression, Redis-backed caching hooks, rate limiting in production
+- **Developer velocity**: Vite-powered dev server with HMR for **Vue** (React roadmap)
+- **Composable backends**: Discover `**/*.backend.ts` under your app root and mount Koa routes per component
+- **Configurable discovery**: `--exclude_paths` / `FLIGHT_EXCLUDE_PATHS` to skip directories when scanning backends
+- **TypeScript-native**: Written for TS projects; sensible defaults, minimal ceremony
+- **Interop-friendly**: Correct handling of `yargs` when launched via **tsx** or similar loaders (no patch-package needed from **v1.0.8** onward)
 
 ## Installation
 
@@ -27,11 +27,11 @@ npm install @thoughtpivot/flight
 yarn add @thoughtpivot/flight
 ```
 
-Previously published on npm as `@spytech/flight`; switch your dependency to `@thoughtpivot/flight`.
+Legacy npm scope: the package was previously published as `@spytech/flight`—use `@thoughtpivot/flight` going forward.
 
-### Downstream apps (tsx / patch-package)
+### Downstream apps (tsx)
 
-From **v1.0.8** onward, Flight normalizes `require('yargs/yargs')` when loaders such as **tsx** expose it as `{ default: factory }` instead of the factory. If you only added **patch-package** for that workaround, upgrade `@thoughtpivot/flight`, delete `patches/@thoughtpivot+flight+*.patch`, and remove any **postinstall** hook that existed solely to apply it.
+From **v1.0.8** onward, Flight normalizes `require('yargs/yargs')` under loaders that expose `{ default: factory }`. If you added **patch-package** only for that issue, upgrade Flight and drop that patch.
 
 ## Quick Start
 
@@ -49,13 +49,7 @@ npm init -y
 npm install @thoughtpivot/flight ioredis
 ```
 
-3. Ensure Redis is running locally or set environment variables:
-
-```bash
-# Default values shown below
-export FLIGHT_REDIS_HOST=localhost
-export FLIGHT_REDIS_PORT=6379
-```
+3. Ensure Redis is running locally or set environment variables (see table below).
 
 4. Create a component with a backend route:
 
@@ -79,48 +73,70 @@ export default router.routes()
 
 5. Start the server:
 
-Development mode:
+**Development mode:**
 
 ```bash
 node flight.js --mode development --app_home .
-# Starts development server on port 3001 with HMR
-# Backend API available on port 3000
+# Vite dev server on port 3001 with HMR; backend API on port 3000
 ```
 
-Production mode:
+**Production mode:**
 
 ```bash
 node flight.js --mode production --app_home .
-# Builds and serves application on port 3000
+# Production bundle + server on port 3000 (see env table for ports/paths)
 ```
 
-Available CLI options:
+## Configuration: CLI, `.env`, and environment variables
 
-- `--app_home`: Application root directory (default: current directory)
-- `--exclude_paths` / `--exclude-paths`: Directories under `app_home` to omit when discovering `**/*.backend.ts` routes. Repeat the flag (`--exclude_paths node_modules --exclude_paths dist`) or use commas (`--exclude_paths node_modules,dist`). Also accepts `FLIGHT_EXCLUDE_PATHS` (comma-separated). Paths must stay inside `app_home`.
-- `--app_key`: Application key for sessions (default: 'flightApp')
-- `--app_secret`: Secret key for session encryption (default: 'the best secret key in the world')
-- `--mode`: 'development' or 'production' (default: 'production')
+Flight loads a **`.env`** file from the **current working directory** at startup (via **`dotenv`**), so local secrets and settings stay out of source control. Combine that with real **`FLIGHT_*`** variables in staging/production for twelve-factor style deployments.
+
+**Precedence (important):**
+
+- For **`mode`**, **`FLIGHT_MODE`** wins over **`--mode`** when the variable is set (non-empty).
+- For other CLI flags below, if you **omit** the flag, Flight falls back to the matching **`FLIGHT_*`** value where listed, then to the default.
+
+| CLI flag                              | Environment variable         | Default      | Notes                                                                                    |
+| ------------------------------------- | ---------------------------- | ------------ | ---------------------------------------------------------------------------------------- |
+| `--app_home`                          | `FLIGHT_APP_HOME`            | `.`          | App root; working directory is changed here                                              |
+| `--exclude_paths` / `--exclude-paths` | `FLIGHT_EXCLUDE_PATHS`       | _(none)_     | Comma-separated and/or repeat the flag; skips subtrees for `**/*.backend.ts` discovery   |
+| `--app_key`                           | `FLIGHT_APP_KEY`             | `flightApp`  | Session cookie key name                                                                  |
+| `--app_secret`                        | `FLIGHT_APP_SECRET`          | _(see code)_ | Session signing secret(s); comma-separated for multiple keys                             |
+| _(argv `session_duration`)_           | `FLIGHT_SESSION_DURATION_MS` | `86400000`   | Session lifetime in ms after validation (set via env or any argv your launcher forwards) |
+| `--port`                              | `FLIGHT_PORT`                | `3000`       | HTTP listen port                                                                         |
+| `--payload_limit`                     | `FLIGHT_PAYLOAD_LIMIT`       | `1mb`        | Body parser JSON limit                                                                   |
+| `--disable_vite`                      | `FLIGHT_DISABLE_VITE`        | `false`      | Set env to `true` to skip Vite production build trigger                                  |
+| `--mode`                              | `FLIGHT_MODE`                | `production` | **`FLIGHT_MODE` overrides `--mode` when set**                                            |
+| _(serve)_                             | `FLIGHT_DIST_PATH`           | `../dist`    | Static root in production (relative to cwd after chdir)                                  |
+| _(Redis)_                             | `FLIGHT_REDIS_HOST`          | `localhost`  |                                                                                          |
+| _(Redis)_                             | `FLIGHT_REDIS_PORT`          | `6379`       |                                                                                          |
+| _(cluster)_                           | `FLIGHT_MAX_WORKERS`         | CPU count    | Cap worker processes on the primary                                                      |
+
+Example `.env` fragment:
+
+```bash
+FLIGHT_MODE=development
+FLIGHT_APP_HOME=.
+FLIGHT_REDIS_HOST=127.0.0.1
+FLIGHT_REDIS_PORT=6379
+FLIGHT_PORT=3000
+FLIGHT_MAX_WORKERS=4
+```
 
 ## Project Structure
 
 ```
 my-app/
-├── components/           # Application components
-│   ├── Hello/   # Component directory
-│   │   ├── Hello.vue    # Vue component view
-│   │   └── Hello.backend.ts  # Backend routes and logic
-├── assets/              # Static assets
-├── dist/                # Production build output
+├── components/
+│   └── Hello/
+│       ├── Hello.vue          # Vue UI (example)
+│       └── Hello.backend.ts   # Koa routes for this component
+├── assets/
+├── dist/                      # Production build output
 └── package.json
 ```
 
-Each component follows a simple structure:
-
-- `Index.vue`: Contains the Vue component template, script, and styles
-- `Index.backend.ts`: Contains the backend routes and logic for the component
-
-Example component files:
+Example Vue + backend snippets:
 
 `components/hello/Index.vue`:
 
@@ -152,107 +168,23 @@ router.get('/hello', async (ctx) => {
 export default router.routes()
 ```
 
-## Configuration
-
-Flight can be configured through environment variables or command-line arguments:
-
-```bash
-FLIGHT_MODE=development
-FLIGHT_REDIS_HOST=localhost
-FLIGHT_REDIS_PORT=6379
-FLIGHT_MAX_WORKERS=4
-```
-
 ## Development Mode
 
-In development mode, Flight provides:
-
-- Hot Module Replacement (HMR)
-- Fast refresh for React components
-- Detailed error messages
-- Development server on port 3001
+- **Vue** + **Vite** with HMR on port **3001**
+- Backend worker on **`--port`** (default **3000**)
+- Helpful logging via Koa middleware
 
 ## Production Mode
 
-Production mode includes:
-
-- Optimized builds
-- Rate limiting
-- Response compression
-- Redis caching
-- Cluster mode for load balancing
-- Production server on port 3000
-
-## Comparison with Avian
-
-Flight is a modern reimagining of the Avian framework, making several architectural improvements while maintaining the core philosophy of component-driven applications. Here are the key differences:
-
-### Framework Evolution
-
-- **Koa Instead of Express**: Flight uses Koa.js as its foundation instead of Express, providing better async/await support and a more modern middleware architecture
-- **Vite Instead of Webpack**: Replaced Webpack bundling with Vite for significantly faster development experience and simpler configuration
-- **TypeScript First**: While Avian supported TypeScript, Flight is built with TypeScript from the ground up
-
-### Architectural Improvements
-
-1. **Simplified Component Structure**
-    - Avian: Complex component hierarchy with multiple file types (.client, .server, .view, .config)
-    - Flight: Streamlined with `.backend.ts` files and modern frontend frameworks
-2. **Development Experience**
-    - Avian: Webpack-based bundling with slower rebuild times
-    - Flight: Vite-powered development with instant HMR and no bundle step in development
-
-3. **Session Management**
-    - Avian: Express-session with Redis store
-    - Flight: Koa-session with Redis store, improved security defaults
-
-4. **Performance Features**
-    - Built-in rate limiting
-    - Redis-based caching
-    - Automatic compression in production
-    - Cluster mode for CPU utilization
-
-5. **Configuration**
-    - Avian: Complex webpack configuration and multiple build modes
-    - Flight: Simplified configuration with sensible defaults and Vite's zero-config approach
-
-### What's Different
-
-1. **Removed Features**
-    - Removed Webpack-specific configurations
-    - Removed legacy view engine support (EJS, Twig, Pug)
-    - Removed Sentry integration (can be added as middleware if needed)
-    - Removed built-in cron job scheduler (better handled by dedicated services)
-
-2. **New Features**
-    - Native ESM support
-    - Built-in CORS support
-    - Improved Redis integration
-    - Better security defaults
-    - Simpler API for backend routes
-    - Modern frontend tooling support
-
-3. **Simplified Architecture**
-    - Reduced configuration complexity
-    - More intuitive component organization
-    - Better separation of concerns
-    - Modern middleware approach
-
-### Migration from Avian
-
-If you're migrating from Avian, the main changes you'll need to make are:
-
-1. Update your component structure to use `.backend.ts` files
-2. Move from Express middleware to Koa middleware
-3. Update your frontend bundling to use Vite
-4. Adapt to the new session management system
-5. Update your static file serving configuration
+- Optional **`npx vite build`** before serving static assets (unless `FLIGHT_DISABLE_VITE=true`)
+- Compression, Redis-backed rate limiting, cache middleware hook
+- Cluster workers with **`FLIGHT_MAX_WORKERS`** cap
 
 ## Requirements
 
-- Node.js 16.x or higher
-- Redis server
-- TypeScript 4.x or higher
+- Node.js **16.x** or higher
+- **Redis** (sessions / rate limit / cache integrations)
+- **TypeScript** in your app if you author `.backend.ts` modules as TS
 
 ## License
 
@@ -260,14 +192,10 @@ MIT
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Issues and pull requests are welcome. Flight improves fastest with real workloads—if you hit an edge case, open an issue with a minimal repro.
 
 ## Acknowledgments
 
-Flight succeeds the [Avian](https://github.com/ispyhumanfly/avian) framework. Avian began at ThoughtPivot and was later handed to FlyPaper Technologies, LLC, where it grew into the platform many teams relied on. Flight is born from that lineage—the ideas and hardening FlyPaper contributed to Avian—carried forward as ThoughtPivot’s next-generation server.
+**Flight** succeeds **[Avian](https://github.com/ispyhumanfly/avian)**—the component-oriented Node server that helped prove this programming model. **Dan Stevenson** created Avian and carried it into **FlyPaper Technologies**, where **Nick Fredericks**, Dan, and the FlyPaper team sharpened Avian’s component boundaries and pushed its operational story. Dan continued to maintain Avian while **Flight** took shape to embrace newer tooling and a cleaner baseline for the next decade.
 
-We’re grateful to FlyPaper Technologies for stewarding Avian and advancing component-driven architecture.
-
-## ThoughtPivot
-
-Today Flight is an official ThoughtPivot technology: developed and maintained by the [ThoughtPivot](https://github.com/thoughtpivot) organization as part of its ecosystem.
+Today **Flight** is maintained by the **ThoughtPivot** engineering team and **contributors like you**—the same spirit of openness and iteration, with a hard focus on speed, clarity, and deployment flexibility.

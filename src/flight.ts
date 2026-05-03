@@ -1,5 +1,7 @@
 #!ts-node
 
+import 'dotenv/config'
+
 import { exec, spawn } from 'child_process'
 
 import Koa from 'koa'
@@ -102,15 +104,15 @@ if (isNaN(argv.session_duration) || argv.session_duration < 0) {
 }
 
 if (!argv.app_home) {
-    argv.app_home = '.'
+    argv.app_home = process.env.FLIGHT_APP_HOME || '.'
 }
 
 if (!argv.app_key) {
-    argv.app_key = 'flightApp'
+    argv.app_key = process.env.FLIGHT_APP_KEY || 'flightApp'
 }
 
 if (!argv.app_secret) {
-    argv.app_secret = 'the best secret key in the world'
+    argv.app_secret = process.env.FLIGHT_APP_SECRET || 'the best secret key in the world'
 }
 
 // Set default port values
