@@ -19,7 +19,23 @@ import ratelimit from 'koa-ratelimit'
 import serve from 'koa-static'
 import session from 'koa-session'
 
-const argv = require('yargs/yargs')(process.argv.slice(2)).argv
+/** CLI argv shape after Flight applies defaults (see block below). */
+interface FlightArgv {
+    session_duration?: number
+    app_home?: string
+    app_key?: string
+    app_secret?: string
+    port?: number | string
+    payload_limit?: string
+    disable_vite?: boolean
+    mode?: string
+}
+
+// tsx (and similar loaders) may expose require('yargs/yargs') as { default: factory } instead of factory.
+type YargsFactoryFn = (args: string[]) => { argv: FlightArgv }
+const _yargs = require('yargs/yargs') as YargsFactoryFn | { default: YargsFactoryFn }
+const yargsFactory: YargsFactoryFn = typeof _yargs === 'function' ? _yargs : _yargs.default
+const argv = yargsFactory(process.argv.slice(2)).argv
 
 // Set default session duration (24 hours in milliseconds)
 const DEFAULT_SESSION_DURATION = 86400000 // 24 hours in milliseconds

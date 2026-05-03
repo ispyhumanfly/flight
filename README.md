@@ -29,6 +29,10 @@ yarn add @thoughtpivot/flight
 
 Previously published on npm as `@spytech/flight`; switch your dependency to `@thoughtpivot/flight`.
 
+### Downstream apps (tsx / patch-package)
+
+From **v1.0.8** onward, Flight normalizes `require('yargs/yargs')` when loaders such as **tsx** expose it as `{ default: factory }` instead of the factory. If you only added **patch-package** for that workaround, upgrade `@thoughtpivot/flight`, delete `patches/@thoughtpivot+flight+*.patch`, and remove any **postinstall** hook that existed solely to apply it.
+
 ## Quick Start
 
 1. Create a new project directory and initialize:
