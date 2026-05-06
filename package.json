@@ -12,7 +12,8 @@
     "scripts": {
         "lint": "eslint . --fix && prettier -w .",
         "build": "rm -rf dist; node_modules/.bin/tsc --project .",
-        "test": "npm run build && node --test dist/spa-pipeline.test.js"
+        "test": "npm run build && node --test dist/spa-pipeline.test.js",
+        "prepublishOnly": "npm run build"
     },
     "repository": {
         "type": "git",

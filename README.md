@@ -72,21 +72,44 @@ router.get('/hello', async (ctx) => {
 export default router.routes()
 ```
 
-5. Start the server:
+5. Add scripts to **`package.json`** (the `flight` binary comes from **`node_modules/.bin`** after install):
 
-**Development mode:**
-
-```bash
-node flight.js --mode development --app_home .
-# Vite dev server on port 3001 with HMR; backend API on port 3000
+```json
+{
+    "scripts": {
+        "dev": "flight --mode development",
+        "start": "flight --mode production"
+    }
+}
 ```
 
-**Production mode:**
+Use **`FLIGHT_DISABLE_VITE`**, **`FLIGHT_DIST_PATH`**, and related env vars in **`.env`** for production built-assets mode (see the configuration table below).
+
+6. Start the server:
+
+**Development (Vite on 3001, API on 3000):**
 
 ```bash
-node flight.js --mode production --app_home .
-# Production bundle + server on port 3000 (see env table for ports/paths)
+npx flight --mode development
+# or: npm run dev
 ```
+
+**Production:**
+
+```bash
+npx flight --mode production
+# or: npm run start
+```
+
+**`--app_home`** defaults to **`.`** (the current working directory). Pass **`--app_home path/to/app`** only when your app root is not the directory you run the command from.
+
+**Try without adding a dependency** (downloads the package for this invocation):
+
+```bash
+npx --yes --package @thoughtpivot/flight flight --mode development
+```
+
+**Global install** (optional): `npm install -g @thoughtpivot/flight`, then run **`flight`** from your PATH the same way as **`npx flight`**.
 
 ## Development vs production
 
