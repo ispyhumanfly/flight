@@ -21,6 +21,17 @@ import ratelimit from 'koa-ratelimit'
 import serve from 'koa-static'
 import session from 'koa-session'
 
+import {
+    applyTrustProxy,
+    httpCacheEnabledInSpaPipeline,
+    parseCommaPrefixes,
+    productionSpaPipelineActive,
+    ratelimitWithPrefixSkips,
+    resolveDistRoot,
+    spaIndexHtmlFallback,
+    spaIndexRelative
+} from './spa-pipeline.js'
+
 /** CLI argv shape after Flight applies defaults (see block below). */
 interface FlightArgv {
     session_duration?: number
@@ -89,6 +100,39 @@ const argv = yargsEntry(process.argv.slice(2))
         default: [],
         describe: 'Directories under app_home to skip when discovering **/*.backend.ts (repeat flag or comma-separated)'
     })
+    .option('mode', {
+        type: 'string',
+        describe: 'development (Vite HMR) or production'
+    })
+    .option('port', {
+        type: 'number',
+        describe: 'HTTP listen port'
+    })
+    .option('app_home', {
+        alias: 'app-home',
+        type: 'string',
+        describe: 'Application root directory'
+    })
+    .option('app_key', {
+        alias: 'app-key',
+        type: 'string',
+        describe: 'Session cookie name'
+    })
+    .option('app_secret', {
+        alias: 'app-secret',
+        type: 'string',
+        describe: 'Session signing secret(s), comma-separated for rotation'
+    })
+    .option('payload_limit', {
+        alias: 'payload-limit',
+        type: 'string',
+        describe: 'koa-bodyparser JSON body limit'
+    })
+    .option('disable_vite', {
+        alias: 'disable-vite',
+        type: 'boolean',
+        describe: 'Skip vite build in production; enables built-assets / SPA pipeline when mode is production'
+    })
     .parseSync() as FlightArgv
 
 // Set default session duration (24 hours in milliseconds)
@@ -136,8 +180,8 @@ if (isNaN(argv.port) || argv.port < 1 || argv.port > 65535) {
 
 // Set default value for disable_vite flag
 if (argv.disable_vite === undefined) {
-    // Check for environment variable first, then default to false
-    argv.disable_vite = process.env.FLIGHT_DISABLE_VITE === 'true' ? true : false
+    const dv = process.env.FLIGHT_DISABLE_VITE
+    argv.disable_vite = dv === 'true' || dv === '1' || dv === 'yes'
 }
 
 // Ensure the value is a boolean
@@ -194,6 +238,8 @@ if (cluster.isPrimary) {
     })
 } else {
     const app = new Koa()
+    applyTrustProxy(app)
+
     app.use(logger())
 
     app.keys = argv.app_secret.split(',')
@@ -247,30 +293,52 @@ if (cluster.isPrimary) {
             })
         }
 
-        app.use(compress())
-        app.use(
-            ratelimit({
-                driver: 'redis',
-                db: redis,
-                duration: 60000,
-                errorMessage: 'Sometimes You Just Have to Slow Down.',
-                id: (ctx) => ctx.get('x-forwarded-for') || ctx.ip,
-                headers: {
-                    remaining: 'Rate-Limit-Remaining',
-                    reset: 'Rate-Limit-Reset',
-                    total: 'Rate-Limit-Total'
-                },
-                max: 1200,
-                disableHeader: false
-            })
-        )
-        app.use(
-            koaCash({
-                get: (key) => redis.get(key),
-                set: (key, value) => redis.set(key, value, 'EX', 30)
-            })
-        )
-        app.use(serve(process.env.FLIGHT_DIST_PATH || '../dist'))
+        const distRoot = resolveDistRoot(process.cwd())
+        const useSpaPipeline = productionSpaPipelineActive(mode, Boolean(argv.disable_vite))
+        const staticPrefixes = parseCommaPrefixes(process.env.FLIGHT_STATIC_PREFIXES, '/assets,/fonts')
+        const rateLimitSkipPrefixes = dedupeStrings([
+            ...staticPrefixes,
+            ...parseCommaPrefixes(process.env.FLIGHT_RATE_LIMIT_EXCLUDE_PREFIXES, '')
+        ])
+        const spaDenyExtra = parseCommaPrefixes(process.env.FLIGHT_SPA_DENY_PREFIXES, '')
+
+        const productionRatelimit = ratelimit({
+            driver: 'redis',
+            db: redis,
+            duration: 60000,
+            errorMessage: 'Sometimes You Just Have to Slow Down.',
+            id: (ctx) => ctx.get('x-forwarded-for') || ctx.ip,
+            headers: {
+                remaining: 'Rate-Limit-Remaining',
+                reset: 'Rate-Limit-Reset',
+                total: 'Rate-Limit-Total'
+            },
+            max: 1200,
+            disableHeader: false
+        })
+
+        const productionKoaCash = koaCash({
+            get: (key) => redis.get(key),
+            set: (key, value) => redis.set(key, value, 'EX', 30)
+        })
+
+        if (useSpaPipeline) {
+            console.log(
+                'Flight: production SPA pipeline (static + index.html fallback before compress / rate limit); opt out with FLIGHT_DISABLE_SPA_PIPELINE=1'
+            )
+            app.use(serve(distRoot))
+            app.use(spaIndexHtmlFallback(distRoot, spaIndexRelative(), spaDenyExtra))
+            app.use(compress())
+            app.use(ratelimitWithPrefixSkips(redis, rateLimitSkipPrefixes))
+            if (httpCacheEnabledInSpaPipeline()) {
+                app.use(productionKoaCash)
+            }
+        } else {
+            app.use(compress())
+            app.use(productionRatelimit)
+            app.use(productionKoaCash)
+            app.use(serve(distRoot))
+        }
 
         if (!argv.disable_vite) {
             console.log(`App served out of dist/ and available on port ${argv.port}`)
