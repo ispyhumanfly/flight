@@ -1,6 +1,6 @@
 {
     "name": "@thoughtpivot/flight",
-    "version": "1.1.0",
+    "version": "2.0.0",
     "description": "A web server designed for running full stack, component based applications at enterprise scale.",
     "main": "src/flight.ts",
     "publishConfig": {
@@ -12,7 +12,7 @@
     "scripts": {
         "lint": "eslint . --fix && prettier -w .",
         "build": "rm -rf dist; node_modules/.bin/tsc --project .",
-        "test": "echo \"Error: no test specified\" && exit 0"
+        "test": "npm run build && node --test dist/spa-pipeline.test.js"
     },
     "repository": {
         "type": "git",
@@ -24,6 +24,13 @@
         "url": "https://github.com/thoughtpivot/flight/issues"
     },
     "homepage": "https://github.com/thoughtpivot/flight#readme",
+    "files": [
+        "dist/flight.js",
+        "dist/spa-pipeline.js",
+        "README.md",
+        "CHANGELOG.md",
+        "readme-assets"
+    ],
     "dependencies": {
         "@koa/cors": "^5.0.0",
         "@koa/router": "^13.1.0",
@@ -64,11 +71,13 @@
         "@types/koa-session": "^6.4.5",
         "@types/koa-static": "^4.0.4",
         "@types/node": "^22.19.17",
+        "@types/supertest": "^6.0.2",
         "@typescript-eslint/parser": "^8.59.1",
         "eslint": "^9.39.4",
         "eslint-plugin-jsdoc": "^50.8.0",
         "eslint-plugin-vue": "^9.33.0",
         "prettier": "^3.8.3",
+        "supertest": "^7.0.0",
         "ts-node": "^10.9.2",
         "typescript": "^5.9.3"
     }
