@@ -103,10 +103,16 @@ npx flight --mode production
 
 **`--app_home`** defaults to **`.`** (the current working directory). Pass **`--app_home path/to/app`** only when your app root is not the directory you run the command from.
 
-**Try without adding a dependency** (downloads the package for this invocation):
+**Try without adding a dependency** (downloads the package for this invocation). Use **`--package=@scope/pkg`** (equals form) and a literal **`--`** before the binary name so `npx` does not treat `flight` as a separate package or lose the install’s **`node_modules/.bin`** on your `PATH` (otherwise you can see `sh: flight: command not found`):
 
 ```bash
-npx --yes --package @thoughtpivot/flight flight --mode development
+npx --yes --package=@thoughtpivot/flight -- flight --mode development
+```
+
+Equivalent:
+
+```bash
+npm exec --yes --package=@thoughtpivot/flight -- flight --mode development
 ```
 
 **Global install** (optional): `npm install -g @thoughtpivot/flight`, then run **`flight`** from your PATH the same way as **`npx flight`**.
