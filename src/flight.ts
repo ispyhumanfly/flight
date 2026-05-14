@@ -102,7 +102,7 @@ const argv = yargsEntry(process.argv.slice(2))
     })
     .option('mode', {
         type: 'string',
-        describe: 'development (Vite HMR) or production'
+        describe: 'development (Vite HMR for Vue/React per vite.config) or production'
     })
     .option('port', {
         type: 'number',
@@ -359,12 +359,12 @@ if (cluster.isPrimary) {
         })
 
         viteProcess.on('error', (error) => {
-            console.error('Failed to start vite server:', error)
+            console.error('Failed to start Vite dev server:', error)
         })
 
         viteProcess.on('exit', (code) => {
             if (code !== 0) {
-                console.error(`Vite server exited with code ${code}`)
+                console.error(`Vite dev server exited with code ${code}`)
             }
         })
 
@@ -373,6 +373,6 @@ if (cluster.isPrimary) {
             process.exit(0)
         })
 
-        console.log(`Vite development server with hot module reload ${process.pid} started on 3001`)
+        console.log(`Vite dev server (HMR for Vue/React per your vite.config) for worker ${process.pid} on port 3001`)
     }
 }
