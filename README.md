@@ -6,14 +6,14 @@
 
 **Flight** is a Node.js application server for teams who want something **fast**, **boring in the good way**, and **ready for serious traffic**. You bring your own hosting—there is no lock-in to a proprietary edge or a single vendor’s deployment story. It fits **twelve-factor** style workflows: configuration via environment variables, horizontal scaling, and state kept where it belongs (for Flight, that includes **Redis** for sessions and cache-friendly layers).
 
-Think **platform-agnostic**: not framework-as-a-platform, but a clear runtime you can run wherever Node runs—VMs, Kubernetes, bare metal, your cloud of choice. Flight is aimed at **hyperscale-friendly** designs (cluster workers out of the box), **ephemeral** processes, and **component-shaped** backends so routes stay colocated with the features they serve. **Vue** and **Vite** are first-class today; **React** support is on the roadmap.
+Think **platform-agnostic**: not framework-as-a-platform, but a clear runtime you can run wherever Node runs—VMs, Kubernetes, bare metal, your cloud of choice. Flight is aimed at **hyperscale-friendly** designs (cluster workers out of the box), **ephemeral** processes, and **component-shaped** backends so routes stay colocated with the features they serve. **Vue** and **React** are both supported through the same **Vite** dev and production flows (your app’s **`vite.config`** chooses the UI stack; Flight does not).
 
 Flight is **open source** from **[ThoughtPivot](https://github.com/thoughtpivot)**.
 
 ## Highlights
 
 - **Performance-focused**: Cluster mode, compression, Redis-backed caching hooks, rate limiting in production
-- **Developer velocity**: Vite-powered dev server with HMR for **Vue** (React roadmap)
+- **Developer velocity**: **Vite** dev server with HMR on port **3001** for **Vue** or **React** (per your project’s Vite config)
 - **Composable backends**: Discover `**/*.backend.ts` under your app root and mount Koa routes per component
 - **Production SPA**: Built-in **`dist` + `index.html`** fallback (option B) when running **`production`** with **`disable_vite`**, with an explicit opt-out for API-only processes
 - **Configurable discovery**: `--exclude_paths` / `FLIGHT_EXCLUDE_PATHS` to skip directories when scanning backends
@@ -49,6 +49,8 @@ npm init -y
 ```bash
 npm install @thoughtpivot/flight ioredis
 ```
+
+For a **React** UI, also install `react`, `react-dom`, and (with TypeScript) `@types/react` / `@types/react-dom` as dev dependencies. For **Vue**, install `vue` and wire **`@vitejs/plugin-vue`** in **`vite.config`**.
 
 3. Ensure Redis is running locally or set environment variables (see table below).
 
@@ -121,12 +123,12 @@ npm exec --yes --package=@thoughtpivot/flight -- flight --mode development
 
 Flight picks **`mode`** as: **`FLIGHT_MODE`** (if set and non-empty), else **`--mode`** from argv, else **`production`**. Everything below assumes Redis is reachable unless you only use routes that avoid session/ratelimit/cache.
 
-| Topic            | Development                                                                                   | Production                                                                                                                                  |
-| ---------------- | --------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Vite**         | Child process: `npx vite --port 3001 --host 0.0.0.0` (HMR).                                   | If **`disable_vite` is false**: `exec('npx vite build')` is triggered once at worker startup. If **`disable_vite` is true**: no Vite build. |
-| **Listen port**  | API + sessions on **`--port`** / `FLIGHT_PORT` (default **3000**). UI dev server on **3001**. | Same **`--port`** / `FLIGHT_PORT` for the worker.                                                                                           |
-| **Static / SPA** | The Vite dev server serves UI; Flight does **not** mount the production static/SPA stack.     | See **Production SPA pipeline** below: when **`production`** + **`disable_vite`**, Flight uses **Option A** by default unless opted out.    |
-| **Typical use**  | Local full-stack with HMR.                                                                    | CI-built `dist` served by Flight (or behind a load balancer).                                                                               |
+| Topic            | Development                                                                                              | Production                                                                                                                                  |
+| ---------------- | -------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Vite**         | Child process: `npx vite --port 3001 --host 0.0.0.0` (HMR for **Vue or React**, per your `vite.config`). | If **`disable_vite` is false**: `exec('npx vite build')` is triggered once at worker startup. If **`disable_vite` is true**: no Vite build. |
+| **Listen port**  | API + sessions on **`--port`** / `FLIGHT_PORT` (default **3000**). UI dev server on **3001**.            | Same **`--port`** / `FLIGHT_PORT` for the worker.                                                                                           |
+| **Static / SPA** | The Vite dev server serves UI; Flight does **not** mount the production static/SPA stack.                | See **Production SPA pipeline** below: when **`production`** + **`disable_vite`**, Flight uses **Option A** by default unless opted out.    |
+| **Typical use**  | Local full-stack with HMR.                                                                               | CI-built `dist` served by Flight (or behind a load balancer).                                                                               |
 
 **Edge cases**
 
@@ -233,9 +235,70 @@ router.get('/hello', async (ctx) => {
 export default router.routes()
 ```
 
+## React + Vite (same Flight commands)
+
+Flight does **not** choose Vue vs React—it runs **`vite`** / **`vite build`** from your **`app_home`**; your **`vite.config.*`** and app **`package.json`** select the framework. The `@thoughtpivot/flight` package includes **`@vitejs/plugin-react`** alongside **`@vitejs/plugin-vue`** so React+Vite apps get the same style of transitive plugin coverage as Vue apps. You still install the UI runtime in **your** app:
+
+```bash
+npm install react react-dom
+npm install -D @types/react @types/react-dom
+```
+
+`vite.config.ts` (project root):
+
+```typescript
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
+export default defineConfig({
+    plugins: [react()]
+})
+```
+
+`index.html`:
+
+```html
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Flight + React</title>
+    </head>
+    <body>
+        <div id="root"></div>
+        <script type="module" src="/src/main.tsx"></script>
+    </body>
+</html>
+```
+
+`src/main.tsx`:
+
+```tsx
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+import App from './App'
+
+createRoot(document.getElementById('root')!).render(
+    <StrictMode>
+        <App />
+    </StrictMode>
+)
+```
+
+`src/App.tsx`:
+
+```tsx
+export default function App() {
+    return <h1>Hello from Flight + React</h1>
+}
+```
+
+Use the same **`npx flight --mode development`** / **`--mode production`** flow as Vue. Production **`dist`**, **`FLIGHT_DISABLE_VITE`**, and the **Production SPA pipeline** behave the same for a Vite-built React SPA.
+
 ## Development mode
 
-- **Vue** + **Vite** with HMR on port **3001**
+- **Vite** with HMR on port **3001** for **Vue or React** (whatever your `vite.config` configures)
 - Backend worker on **`--port`** (default **3000**)
 - Request logging via **`koa-logger`**
 

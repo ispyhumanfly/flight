@@ -1,5 +1,19 @@
 # Changelog
 
+## 2.1.0
+
+### Added
+
+- **`@vitejs/plugin-react`** as a **dependency** (alongside **`@vitejs/plugin-vue`**), so React + Vite apps that depend on `@thoughtpivot/flight` get the same style of transitive Vite plugin coverage as Vue apps. Install **`react`**, **`react-dom`**, and (for TypeScript) **`@types/react`** / **`@types/react-dom`** in your application; Flight remains the server/runtime, not the UI runtime.
+
+### Documentation
+
+- README: **React + Vite** quick path (sample `vite.config`, `index.html`, `main.tsx`, `App.tsx`), highlights updated for Vue and React, and clarification that **Flight does not pick Vue vs React**—your **`vite.config`** does.
+
+### Changed
+
+- Development log lines refer to the **Vite** dev server generically (Vue/React per app config).
+
 ## 2.0.0
 
 ### Breaking
