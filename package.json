@@ -72,7 +72,7 @@
         "@types/koa-redis-cache": "^3.0.4",
         "@types/koa-session": "^6.4.5",
         "@types/koa-static": "^4.0.4",
-        "@types/node": "^22.19.17",
+        "@types/node": "^25.9.1",
         "@types/supertest": "^6.0.2",
         "@typescript-eslint/parser": "^8.59.1",
         "eslint": "^9.39.4",
