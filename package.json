@@ -37,7 +37,7 @@
         "@koa/router": "^13.1.0",
         "@vitejs/plugin-react": "^4.4.1",
         "@vitejs/plugin-vue": "^5.2.1",
-        "@vue/language-plugin-pug": "^2.2.0",
+        "@vue/language-plugin-pug": "^3.3.7",
         "core-js": "^3.40.0",
         "dotenv": "^17.4.2",
         "esbuild": "^0.28.0",
